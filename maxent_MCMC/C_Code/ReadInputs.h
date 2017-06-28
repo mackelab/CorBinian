@@ -1,0 +1,1 @@
+void Inputs(char *CommandString[], int CommandNum, int *NUMVARS, int *NUMRUNS, int *TCOUNT,int *NUMSAMPS, int *NUMDATA,char *trackFile, char *paramsFile,char *mcFile,double *expec_empir, double *init_lambda,double *exit_conditions);
