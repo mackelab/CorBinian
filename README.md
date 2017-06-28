@@ -60,3 +60,5 @@ Missing: Methods for calculating bias
 Currently implemented: Code for fast iterative scaling for K-pairwise maximum entropy models ([Tkacik et al. 2014](https://doi.org/10.1371/journal.pcbi.1003408)), based on pairwise Gibbs sampling with Rao-Blackwellized estimators for first and second moments of the distribution. 
 
 Missing: demo scripts
+
+Additional code used specifically for [Nonnemacher et al. (2016)](https://arxiv.org/abs/1603.00097) can be found [here](https://bitbucket.org/mackelab/critical_retina). This includes scripts for fitting K-pairwise models to simulated population spike-data, and code for computing population measures such as the specific heat capacity from these models.
