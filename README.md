@@ -12,7 +12,7 @@ See [github.com/mackelab](https://github.com/mackelab) for more repositories by 
 
 To get started, change base_dir.m to the name of the directory that the code is sitting in, run startup.m to set the path, and run one of the demo-files in the demo-folder. 
 
-**We are in the process of integrating new functions into the codebase. Pleas note that until this is completed, there may be some compatibility issues.** A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
+**We are in the process of integrating new functions for `K-pairwise' and `flat' maximum entropy models (found in /K_pairwise and /flat_models) into the codebase. Pleas note that until this is completed, there may be some compatibility issues.** A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
 
 Much of this code was developed in collaboration with---or even by--- the co-authors on the various manuscript. Feel free to use the code, but please acknowledge the source and paper appropriately if you are using it for a publication. 
 
