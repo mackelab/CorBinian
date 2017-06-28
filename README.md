@@ -61,4 +61,4 @@ Currently implemented: Code for fast iterative scaling for K-pairwise maximum en
 
 Missing: demo scripts
 
-Additional code used specifically for [Nonnemacher et al. (2016)](https://arxiv.org/abs/1603.00097) can be found [here](https://bitbucket.org/mackelab/critical_retina). This includes scripts for fitting K-pairwise models to simulated population spike-data, and code for computing population measures such as the specific heat capacity from these models.
+Additional code used specifically for [Nonnemacher et al. (2016)](https://arxiv.org/abs/1603.00097) can be found [here](https://github.com/mackelab/critical_retina). This includes scripts for fitting K-pairwise models to simulated population spike-data, and code for computing population measures such as the specific heat capacity from these models.
