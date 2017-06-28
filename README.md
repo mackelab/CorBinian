@@ -2,16 +2,17 @@
 
 This repository contains a number of different statistical methods for modelling multivariate binary and count data with correlations. 
 
-It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but at least some of the methods will be applicable more generally. I have tried to make conventions compatible across the different projects and to share utility functions, but there is still some mismatch in conventions and redundant functions.
+It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but at least some of the methods will be applicable more generally. We have tried to make conventions compatible across the different projects and to share utility functions, but there is still some mismatch in conventions and redundant functions.
 
 The current version is (and to some degree will always be) work in progress. 
 
-See [https://bitbucket.org/mackelab/home](https://bitbucket.org/mackelab/home) for more repositories by the group.
+See [github.com/mackelab](https://github.com/mackelab) for more repositories by the group.
 
 ## Usage
 
 To get started, change base_dir.m to the name of the directory that the code is sitting in, run startup.m to set the path, and run one of the demo-files in the demo-folder. 
 
+** We are in the process of integrating new functions into the codebase. Pleas note that until this is completed, there may be some compatibility issues. ** A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
 
 Much of this code was developed in collaboration with---or even by--- the co-authors on the various manuscript. Feel free to use the code, but please acknowledge the source and paper appropriately if you are using it for a publication. 
 
@@ -53,3 +54,9 @@ Currently implemented: Functions for fitting maximum entropy models to small pop
 Missing: Methods for calculating bias 
 
 * demo_maxent.m: Fit a maximum entropy model (typically second order but code is flexible) in a case which can be solved exactly, i.e. for which one does not need MCMC.
+
+###  M Nonnenmacher, C Behrens, P Berens, M Bethge, JH Macke: Signatures of criticality arise in simple neural population models with correlations, arXiv:1603.00097 [q-bio.NC]
+
+Currently implemented: Code for fast iterative scaling K-pairwise maximum entropy models ([Tkacik et al. 2014](https://doi.org/10.1371/journal.pcbi.1003408)), based on pairwise Gibbs sampling with Rao-Blackwellized estimators for first and second moments of the distribution. 
+
+Missing: demo scripts
