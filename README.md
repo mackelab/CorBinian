@@ -12,7 +12,7 @@ See [github.com/mackelab](https://github.com/mackelab) for more repositories by 
 
 To get started, change base_dir.m to the name of the directory that the code is sitting in, run startup.m to set the path, and run one of the demo-files in the demo-folder. 
 
-** We are in the process of integrating new functions into the codebase. Pleas note that until this is completed, there may be some compatibility issues. ** A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
+**We are in the process of integrating new functions into the codebase. Pleas note that until this is completed, there may be some compatibility issues.** A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
 
 Much of this code was developed in collaboration with---or even by--- the co-authors on the various manuscript. Feel free to use the code, but please acknowledge the source and paper appropriately if you are using it for a publication. 
 
@@ -57,6 +57,6 @@ Missing: Methods for calculating bias
 
 ###  M Nonnenmacher, C Behrens, P Berens, M Bethge, JH Macke: Signatures of criticality arise in simple neural population models with correlations, arXiv:1603.00097 [q-bio.NC]
 
-Currently implemented: Code for fast iterative scaling K-pairwise maximum entropy models ([Tkacik et al. 2014](https://doi.org/10.1371/journal.pcbi.1003408)), based on pairwise Gibbs sampling with Rao-Blackwellized estimators for first and second moments of the distribution. 
+Currently implemented: Code for fast iterative scaling for K-pairwise maximum entropy models ([Tkacik et al. 2014](https://doi.org/10.1371/journal.pcbi.1003408)), based on pairwise Gibbs sampling with Rao-Blackwellized estimators for first and second moments of the distribution. 
 
 Missing: demo scripts
