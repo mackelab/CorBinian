@@ -1,52 +1,62 @@
+% Demo script to showcase code for fast iterative scaling with for 
+% fitting K-pairwise maximum entropy models for multivariate binary data. 
+
+% Fast iterative scaling for regularized K-pairwise maximum entropy models 
+% based on pairwise Gibbs sampling with Rao-Blackwellized estimators for 
+% first and second moments of the distribution.
+
+% Instructions:
+%  - Change to the code directory and run
+%  - The script will take you through the functions .
+%  - After each step, the script will pause. 
+%  - To continue, hit any button.
+%  - Read along in the demo file to follow what's happening.
+
 
 % Simulation setup
 %--------------------------------------------------------------------------
-d=60;                  % data dimensionality
+d=15;                  % data dimensionality
 nSamplesData  = 10000; % draw from ground-truth parameters
 nSamplesEval  = 10000; % draw from paramter estimates for comparison
-burnIn        = 1000;  
+burnIn        =  1000;
+
+h=0.25*randn(d,1)-3.5;           % generate random bias terms h
+J= 0.45*(randn(d)); J=triu(J,1); % generate interaction terms J 
+lambda=hJ2lambda(h,J);           % vectorize
+V = [0, linspace(3.5, -1, d)];
+lambdaTrue = [lambda;V];         % append population count terms V
 
 trainMethod = 'iterativeScaling';
 
-h=0.25*randn(d,1)-3.5; %generate random bias terms;
-J= (3)*0.15*(randn(d)); J=triu(J,1); 
-lambda=hJ2lambda(h,J);
-V = [0, linspace(3.5, -1, d)];
-lambdaTrue = [lambda;V];
-
-pars.d = d; 
-pars.beta = beta; 
-pars.nSamplesData = nSamplesData;
-pars.nSamplesEval  = nSamplesEval;
-pars.burnIn = burnIn;
-
-
-% generate training data
+%% generate training data
 %--------------------------------------------------------------------------
 % Initialize training data-generating MCMC chain with a sample drawn from
-% a nested model (only h = lamdbdaTrue(1:d), i.e. no J, no L)
- EX = exp(lambdaTrue(1:d))./(1+exp(lambdaTrue(1:d))); % works ok for small
- x0 = double(rand(d,1)<EX);                           % entries of L,J
+% a nested model (only h = lamdbdaTrue(1:d), i.e. no J, no V)
+EX = exp(lambdaTrue(1:d))./(1+exp(lambdaTrue(1:d))); 
+x0 = double(rand(d,1)<EX);                           
 
- disp('Generating training data')
- [mfxTrain,~,~] = maxEnt_gibbs_pair_C(nSamplesData, burnIn, ...
-                                   lambdaTrue, x0, fitoptions.machine);
+disp('Generating training data')
+[mfxTrain,~,~] = maxEnt_gibbs_pair_C(nSamplesData, burnIn, ...
+                               lambdaTrue, x0, 'cluster');
 
- EX = mfxTrain(1:d);
+pause;
  
- lambdaInd = zeros(size(lambdaTrue)); 
- lambdaInd(1:d) = log(EX./(1-EX));
- lambdaInd(lambdaInd==Inf) =   1000; % catch cases EX(k)=0 resp. EX(k)=1
- lambdaInd(lambdaInd==-Inf) = -1000; % 
- fitoptions.lambda0 = lambdaInd;
- clear EX tmp xTrain fxTrain 
-
-
-% train model
+%% train model
 %--------------------------------------------------------------------------
 disp('Fitting maxEnt model')
+
+% initialize optimization with independent model
+EX = mfxTrain(1:d);
+lambdaInd = zeros(size(lambdaTrue)); 
+lambdaInd(1:d) = log(EX./(1-EX));
+lambdaInd(lambdaInd==Inf) =   1000; % catch cases EX(k)=0 resp. EX(k)=1
+lambdaInd(lambdaInd==-Inf) = -1000; % 
+fitoptions.lambda0 = lambdaInd;
+clear EX
+
 switch trainMethod
-  case 'MPF'
+    
+  case 'MPF' % minimum probability flow
     fitoptions = struct;
     fitoptions.optTol=1e-100; 
     fitoptions.progTol=1e-100; 
@@ -76,7 +86,7 @@ switch trainMethod
     fitoptions.maxInnerIter = 1;        
     eps = []; % convergence criteria, empty loads defaults
     
-    % make sequence of increasing MCMC chain lengths for each update step
+    % create sequence of increasing MCMC chain lengths for each update step
     a = fitoptions.nSamples; % initial MCMC chain lengths
     tau = 1000;              % update steps over which chain length doubles
     fitoptions.nSamples = [0;round(a * 2.^((1:fitoptions.maxIter)'/tau))];
@@ -86,8 +96,9 @@ switch trainMethod
                               beta, eps, fname, ifSave, hJV, ifbwVK);
 end
 
+pause;
 
-% validate model
+%% validate model
 %--------------------------------------------------------------------------
 
 % for small systems, we can compute P( X | lambdaTrue ) analytically                                 
@@ -116,6 +127,7 @@ else % for large systems, sample (long) MCMC chain
 end % if d < 20  
                     
 % visualize results
+
 figure; 
 subplot(131)
 plot(mfxTrain(1:d), mfxEval(1:d), 'k.');
@@ -123,12 +135,14 @@ title('first moments')
 xlabel('est.')
 ylabel('data')
 axis square
+
 subplot(132)
 plot(mfxTrain(d+1:end-d-1), mfxEval(d+1:end-d-1), 'k.')
 title('second moments')
 xlabel('est.')
 ylabel('data')
 axis square
+
 subplot(133)
 plot(mfxTrain(end-d:end), 'ko-')
 hold on
