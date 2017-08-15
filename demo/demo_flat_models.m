@@ -4,8 +4,8 @@
 close all
 clear all
 
-%% Scenario 1: Sample from different flat DG models with same mean but different 
-% correlation coefficients, and compare their rasters and
+%% Scenario 1: Sample from different flat DG models with same mean but  
+% different correlation coefficients, and compare their rasters and
 % count-distributions
 
 
@@ -20,7 +20,7 @@ for k=1:numel(rhos)
 end
 
 
-h(1)=figure
+fh(1)=figure
 
 for k=1:5
 subplot(2,3,k)
@@ -32,8 +32,8 @@ end
 
 subplot(2,3,6)
 for k=1:5
-   semilogy([0:N],dg_model(k).count_distrib,'color',[0,0,k/5],'linewidth',2); 
-   hold on
+ semilogy([0:N],dg_model(k).count_distrib,'color',[0,0,k/5],'linewidth',2); 
+ hold on
 end
 ylim([.000000001,.2])
 
@@ -41,12 +41,13 @@ ylim([.000000001,.2])
 
 
 for k=1:numel(rhos)
-    [h(k),J(k),ising_probs{k},ising_model(k)]=fit_flat_ising_model(mu,rhos(k),N);
+    [h(k),J(k),ising_probs{k},ising_model(k)]=fit_flat_ising_model(mu, ...
+                                                                rhos(k),N);
     [ising_s{k}]=sample_flat_model(ising_probs{k},Nsamples);
 end
 
 
-h(2)=figure
+fh(2)=figure
 
 for k=1:5
 subplot(2,3,k)
@@ -58,7 +59,8 @@ end
 
 subplot(2,3,6)
 for k=1:5
-   semilogy([0:N],ising_model(k).count_distrib,'color',[0,0,k/5],'linewidth',2); 
+   semilogy([0:N],ising_model(k).count_distrib,'color',[0,0,k/5], ...
+            'linewidth',2); 
    hold on
 end
 xlim([0,100]);
@@ -67,7 +69,7 @@ ylim([.000000001,.2])
 
 %% Scenario 3: Fit a Tkacik/Okun type of 'model' to these data-- should give perfect fit!
 
-h(3)=figure
+fh(3)=figure
 
 for k=1:numel(rhos)
     [lambdas{k},maxent_probs{k},maxent_model(k)]=fit_flat_maxent_model(dg_model(k).count_distrib);
@@ -84,14 +86,15 @@ end
 
 subplot(2,3,6)
 for k=1:5
-   semilogy([0:N],maxent_model(k).count_distrib,'color',[0,0,k/5],'linewidth',2); 
+   semilogy([0:N],maxent_model(k).count_distrib,'color',[0,0,k/5], ...
+            'linewidth',2); 
    hold on
 end
 xlim([0,100]);
 ylim([.000000001,.2])
 
 
-%% Scenario 3: Calculate entropy of these models as a function of population
-% size, and compare to asymptotic results
+%% Scenario 3: Calculate entropy of these models as a function of
+% population size, and compare to asymptotic results
 
 %% 
