@@ -15,7 +15,7 @@ addpath([pwd,'/third_party/minfunc_2012/autoDif'])
 
 
 %compile C_Code  if neceessary
-compile_c=0;
+compile_c=1;
 if compile_c
     warning('Compiling mex-files, this might take a while');
     cd ./maxent_MCMC/C_Code
