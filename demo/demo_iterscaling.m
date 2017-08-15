@@ -15,7 +15,7 @@
 
 % Simulation setup
 %--------------------------------------------------------------------------
-d=15;                  % data dimensionality
+d=30;                  % data dimensionality
 nSamplesData  = 10000; % draw from ground-truth parameters
 nSamplesEval  = 10000; % draw from paramter estimates for comparison
 burnIn        =  1000;
@@ -23,7 +23,7 @@ burnIn        =  1000;
 h=0.25*randn(d,1)-3.5;           % generate random bias terms h
 J= 0.45*(randn(d)); J=triu(J,1); % generate interaction terms J 
 lambda=hJ2lambda(h,J);           % vectorize
-V = [0, linspace(3.5, -1, d)];
+V = [0; linspace(3.5, -1, d)'];
 lambdaTrue = [lambda;V];         % append population count terms V
 
 trainMethod = 'iterativeScaling';
@@ -80,15 +80,15 @@ switch trainMethod
     fitoptions.nRestart = 1;
     fitoptions.modelFit = 'ising_count_l_0';
 
-    fitoptions.nSamples = 500;    
-    fitoptions.burnIn   = 100;
-    fitoptions.maxIter  = 2000;
+    fitoptions.nSamples = 200;    
+    fitoptions.burnIn   =  10;
+    fitoptions.maxIter  = 1000;
     fitoptions.maxInnerIter = 1;        
-    eps = []; % convergence criteria, empty loads defaults
+    eps = [0.05, 0.05, 0.1]; % convergence criteria, empty loads defaults
     
     % create sequence of increasing MCMC chain lengths for each update step
     a = fitoptions.nSamples; % initial MCMC chain lengths
-    tau = 1000;              % update steps over which chain length doubles
+    tau = 400;               % update steps over which chain length doubles
     fitoptions.nSamples = [0;round(a * 2.^((1:fitoptions.maxIter)'/tau))];
     fitoptions.nSamples = floor(fitoptions.nSamples/100)*100;          
         
@@ -96,12 +96,12 @@ switch trainMethod
                               beta, eps, fname, ifSave, hJV, ifbwVK);
 end
 
-pause;
+%pause;
 
 %% validate model
 %--------------------------------------------------------------------------
 
-% for small systems, we can compute P( X | lambdaTrue ) analytically                                 
+% for small systems, we can compute P( X | lambdaTrue ) analytically
 if d < 20
  [features,description,x]=setup_features_maxent(d,'ising_count_l_0');
  [~,~,Ptrue, ~]=logPMaxEnt(features,lambdaTrue);
