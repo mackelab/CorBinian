@@ -9,7 +9,7 @@ if isfield(fitoptions,'lambda0')
 else
     %otherwise use zeros:
     lambda=zeros( d + d*(d-1)/2 + (d+1), 1);
-               %  h +     J     +   L 
+               %  h +     J     +   V 
 end
 
  % Parameter convention-conversion fun.
@@ -21,9 +21,9 @@ end
                   % to work with upper-triangular J and pack/unpack each 
                   % call and to instead simply work with n^2 entries for J. 
     
-  L = lambda(end-d:end); % assumes d+1 entries, i.e. a feature for K = 0
+  V = lambda(end-d:end); % assumes d+1 entries, i.e. a feature for K = 0
 
-  lambda = [J(:); L(:)]; % take note, this is what the following MPF code 
+  lambda = [J(:); V(:)]; % take note, this is what the following MPF code 
                          % assumes the parameters to be structured as
    
  % Data preprocessing (data does not change over minFunc calls, do it once)
@@ -60,8 +60,8 @@ end
   J = reshape(lambda(1:d^2),d,d);
   h = diag(J);
   J = 2*J(logical(tril(ones(size(J)),-1)));
-  L = lambda(end-d:end);                     
-  lambda = [ h(:); J(:); L(:) ];
+  V = lambda(end-d:end);                     
+  lambda = [ h(:); J(:); V(:) ];
 
  % The following code is nice, but thends to bust memory for large (n,d)
   %weights = 0; % currently cannot set them otherwise with this method.  
