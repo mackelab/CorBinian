@@ -63,7 +63,7 @@ BaseDir=pwd;
 BaseLoc=[base_dir '/maxent_MCMC/'];
 
 %disp('Directory where temporary results should be saved')
-TempLoc=[base_dir '/temp_files/'];
+TempLoc=[base_dir '/maxent_MCMC/temp_files/'];
 %keyboard
 
 
