@@ -26,7 +26,7 @@ lambda=hJ2lambda(h,J);           % vectorize
 V = [0; linspace(3.5, -1, d)'];
 lambdaTrue = [lambda;V];         % append population count terms V
 
-trainMethod = 'iterativeScaling';
+trainMethod = 'MPF';
 
 %% generate training data
 %--------------------------------------------------------------------------
@@ -54,47 +54,34 @@ lambdaInd(lambdaInd==-Inf) = -1000; %
 fitoptions.lambda0 = lambdaInd;
 clear EX
 
-switch trainMethod
-    
-  case 'MPF' % minimum probability flow
-    fitoptions = struct;
-    fitoptions.optTol=1e-100; 
-    fitoptions.progTol=1e-100; 
-    fitoptions.MaxIter=3000;
-    fitoptions.lambda0 = -lambdaInd;
-    [lambdaHat,logZ,logP,fitmeans,output] = fit_maxent_mpf(xTrain',fitoptions);
-    lambdaHat = -lambdaHat;
-    
-  case 'iterativeScaling'
           
-    hJV = ones(3,1); % booleans giving whether to include h, J and/or V 
-    ifbwVK = true;   % flag for blockwise update of parameter terms V
-    
-    ifSave = false;  % whether to store results on disk
-    fname = '';      % filename for storing results on disk
+hJV = ones(3,1); % booleans giving whether to include h, J and/or V 
+ifbwVK = true;   % flag for blockwise update of parameter terms V
 
-      
-    fitoptions.regular = 'l1';
-    beta = 0.00001*ones(d*(d+1)/2 + d+1,1); % strength of l1 regularizer
-    fitoptions.machine  = 'cluster';
-    fitoptions.nRestart = 1;
-    fitoptions.modelFit = 'ising_count_l_0';
+ifSave = false;  % whether to store results on disk
+fname = '';      % filename for storing results on disk
 
-    fitoptions.nSamples = 200;    
-    fitoptions.burnIn   =  10;
-    fitoptions.maxIter  = 1000;
-    fitoptions.maxInnerIter = 1;        
-    eps = [0.05, 0.05, 0.1]; % convergence criteria, empty loads defaults
-    
-    % create sequence of increasing MCMC chain lengths for each update step
-    a = fitoptions.nSamples; % initial MCMC chain lengths
-    tau = 400;               % update steps over which chain length doubles
-    fitoptions.nSamples = [0;round(a * 2.^((1:fitoptions.maxIter)'/tau))];
-    fitoptions.nSamples = floor(fitoptions.nSamples/100)*100;          
-        
-    [lambdaHat, fitDiagnostics] = iterScaling(mfxTrain, fitoptions, ...
-                              beta, eps, fname, ifSave, hJV, ifbwVK);
-end
+
+fitoptions.regular = 'l1';
+beta = 0.00001*ones(d*(d+1)/2 + d+1,1); % strength of l1 regularizer
+fitoptions.machine  = 'cluster';
+fitoptions.nRestart = 1;
+fitoptions.modelFit = 'ising_count_l_0';
+
+fitoptions.nSamples = 200;    
+fitoptions.burnIn   =  10;
+fitoptions.maxIter  = 1000;
+fitoptions.maxInnerIter = 1;        
+eps = [0.05, 0.05, 0.1]; % convergence criteria, empty loads defaults
+
+% create sequence of increasing MCMC chain lengths for each update step
+a = fitoptions.nSamples; % initial MCMC chain lengths
+tau = 400;               % update steps over which chain length doubles
+fitoptions.nSamples = [0;round(a * 2.^((1:fitoptions.maxIter)'/tau))];
+fitoptions.nSamples = floor(fitoptions.nSamples/100)*100;          
+
+[lambdaHat, fitDiagnostics] = iterScaling(mfxTrain, fitoptions, ...
+                          beta, eps, fname, ifSave, hJV, ifbwVK);
 
 %pause;
 
