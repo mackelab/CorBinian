@@ -8,6 +8,26 @@ The current version is (and to some degree will always be) work in progress.
 
 See [github.com/mackelab](https://github.com/mackelab) for more repositories by the group.
 
+## Documentation
+
+### maximum entropy modeling 
+
+This repository contains code for fitting maximum entropy models to multivariate binary data, including 
+- second-order (Ising) models
+- K-pairwise models (second order plus population-count terms)
+- flat or K-synchronous models (only population-count terms, assuming homogeneous population)
+Most of the code can be used with any other (binary) features computed from the data. 
+Our implementations use MCMC and iterative scaling to scale to large (N > 100) populations. 
+
+### dichotomized Gaussian models
+
+This repository contains also code for fitting dichotomized Gaussian models to multivariate binary data. 
+Particularly fast code is available for 'homogeneous' models with shared mean- and interaction parameters across the population. 
+
+### specific heat analysis
+
+Functions for computing/estimating the variance of log probabilities and related specific heat capacity from multivariate binary distributions.  
+
 ## Usage
 
 To get started, change base_dir.m to the name of the directory that the code is sitting in, run startup.m to set the path, and run one of the demo-files in the demo-folder. 
