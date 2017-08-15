@@ -2,7 +2,8 @@
 
 This repository contains a number of different statistical methods for modelling multivariate binary and count data with correlations. 
 
-It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but at least some of the methods will be applicable more generally. We have tried to make conventions compatible across the different projects and to share utility functions, but there is still some mismatch in conventions and redundant functions.
+It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but many of the methods will be applicable more generally. 
+We have tried to make conventions compatible across the different projects and to share utility functions, but there is still some mismatch in conventions and redundant functions.
 
 The current version is (and to some degree will always be) work in progress. 
 
@@ -32,7 +33,8 @@ Functions for computing/estimating the variance of log probabilities and related
 
 To get started, change base_dir.m to the name of the directory that the code is sitting in, run startup.m to set the path, and run one of the demo-files in the demo-folder. 
 
-**We are in the process of integrating new functions for 'K-pairwise' and 'flat' maximum entropy models (found in /K_pairwise and /flat_models) into the codebase. Pleas note that until this is completed, there may be some compatibility issues.** A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
+**We are in the process of integrating new functions for 'K-pairwise' and 'flat' maximum entropy models (found in /K_pairwise and /flat_models) into the codebase. Pleas note that until this is completed, there may be some compatibility issues.** 
+A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
 
 Much of this code was developed in collaboration with---or even by--- the co-authors on the various manuscript. Feel free to use the code, but please acknowledge the source and paper appropriately if you are using it for a publication. 
 
@@ -42,7 +44,7 @@ The code is published under the GNU General Public License. The code is provided
 
 ## Publications
 
-(At least eventually), the repository will contain implementations of the methods presented in 
+The repository contains implementations of the methods presented in 
 
 ###  JH Macke*, P Berens*, AS Ecker, AS Tolias and M Bethge: Generating Spike Trains with Specified Correlation Coefficients. Neural Computation 21(2), 397-423, 02 2009
 
