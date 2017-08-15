@@ -1,6 +1,7 @@
 # Welcome
 
 This repository contains a number of different statistical methods for modelling multivariate binary and count data with correlations. 
+This repository is meant to expand and replace the [pop_spike](https://bitbucket.org/mackelab/pop_spike/src) toolbox maintained by the Mackelab. 
 
 It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but many of the methods will be applicable more generally. 
 We have tried to make conventions compatible across the different projects and to share utility functions, but there is still some mismatch in conventions and redundant functions.
@@ -27,13 +28,13 @@ Particularly fast code is available for 'homogeneous' models with shared mean- a
 
 ### specific heat analysis
 
-Functions for computing/estimating the variance of log probabilities and related specific heat capacity from multivariate binary distributions.  
+This repository also provides functions for computing/estimating the variance of log probabilities and related specific heat capacity from multivariate binary distributions.  
 
 ## Usage
 
 To get started, change base_dir.m to the name of the directory that the code is sitting in, run startup.m to set the path, and run one of the demo-files in the demo-folder. 
 
-**We are in the process of integrating new functions for 'K-pairwise' and 'flat' maximum entropy models (found in /K_pairwise and /flat_models) into the codebase. Pleas note that until this is completed, there may be some compatibility issues.** 
+**We are in the process of integrating new functions for 'K-pairwise' and 'flat'/'K-synchronous' maximum entropy models into the codebase. Pleas note that until this is completed, there may be some compatibility issues.** 
 A stable version of many of the spike-train analyses featured here can also be found at [bitbucket.org/mackelab/pop_spike/](https://bitbucket.org/mackelab/pop_spike/src)
 
 Much of this code was developed in collaboration with---or even by--- the co-authors on the various manuscript. Feel free to use the code, but please acknowledge the source and paper appropriately if you are using it for a publication. 
@@ -81,6 +82,9 @@ Missing: Methods for calculating bias
 
 Currently implemented: Code for fast iterative scaling for K-pairwise maximum entropy models ([Tkacik et al. 2014](https://doi.org/10.1371/journal.pcbi.1003408)), based on pairwise Gibbs sampling with Rao-Blackwellized estimators for first and second moments of the distribution. 
 
-Missing: demo scripts
+* demo_iter_scaling.m: Fit a maximum entropy model (typically K-pairwise but code is flexible) using regularized fast iterative scaling with Rao-Blackwellization. 
+
+* demo_MPF.m: Fit a K-pairwise maximum entropy model using minimum probability flow. 
+
 
 Additional code used specifically for [Nonnemacher et al. (2016)](https://arxiv.org/abs/1603.00097) can be found [here](https://github.com/mackelab/critical_retina). This includes scripts for fitting K-pairwise models to simulated population spike-data, and code for computing population measures such as the specific heat capacity from these models.
