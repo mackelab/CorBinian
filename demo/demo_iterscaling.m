@@ -21,6 +21,8 @@ nSamplesData  = 10000; % draw from ground-truth parameters
 nSamplesEval  = 10000; % draw from paramter estimates for comparison
 burnIn        =  1000;
 
+model = 'k_pairwise';
+
 h=0.25*randn(d,1)-3.5;           % generate random bias terms h
 J= 0.45*(randn(d)); J=triu(J,1); % generate interaction terms J 
 lambda=hJ2lambda(h,J);           % vectorize
@@ -64,7 +66,7 @@ fname = '';      % filename for storing results on disk
 fitoptions.regular = 'l1';
 beta = 0.00001*ones(d*(d+1)/2 + d+1,1); % strength of l1 regularizer
 fitoptions.nRestart = 1;
-fitoptions.modelFit = 'ising_count_l_0';
+fitoptions.modelFit = 'k_pairwise';
 
 fitoptions.nSamples = 100;    
 fitoptions.burnIn   =  10;
@@ -89,7 +91,7 @@ disp('- starting iterative scaling')
 
 % for small systems, we can compute P( X | lambdaTrue ) analytically
 if d < 20
- [features,description,x]=setup_features_maxent(d,'ising_count_l_0');
+ [features,description,x]=setup_features_maxent(d,model);
  [~,~,Ptrue, ~]=logPMaxEnt(features,lambdaTrue);
  EX = sum(bsxfun(@times, x', Ptrue'),2);
  description(isnan(description)) = d+1;

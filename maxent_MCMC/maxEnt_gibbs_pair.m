@@ -9,7 +9,7 @@ function [xSampled] = maxEnt_gibbs_pair(nSamples, burnIn, thinning, lambda, x0, 
 %            In the latter case, initial chain member will be drawn.
 % -   model: string specifying the layout of the feature function for the
 %            maxEnt model. This slim version of the code actually only
-%            supports model = 'ising_count_l_0'. 
+%            supports model = 'k_pairwise'. 
 % -   mode:  string specifying what mode to operate in. If mode = 'default'
 %            xSampled contains standard Bernoulli variables.  If however
 %            mode = 'rb', the sampler follows 'Rao-Blackwelling' in
@@ -33,8 +33,8 @@ d = length(x0);
 % x0 = 1 - x0; % to see the influence of starting conditions on the
 %end           % results of the full MCMC chain
 
-if nargin>5 && ~strcmp(model, 'ising_count_l_0')
-  disp('Warning: This is a slim version only supporting "ising_count_l_0"')
+if nargin>5 && ~strcmp(model, 'k_pairwise')
+  disp('Warning: This is a slim version only supporting "k_pairwise"')
 end
 
 if nargin<7 || strcmp(mode,'default')

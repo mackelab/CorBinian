@@ -64,7 +64,7 @@ switch map
         description=[[1:d; (1:d)*nan],pairs,[1:d; (1:d)*nan]];  
         fvals=[x,x(:,pairs(1,:)).*x(:,pairs(2,:)),count_indicators];
         %keyboard
-    case 'ising_count_l_0' % same as 'ising_count', but has feature for K=0
+    case 'k_pairwise' % same as 'ising_count', but has feature for K=0
         pairs=nchoosek(1:d,2)';
         count_indicators=zeros(N,d+1);
         ind=sub2ind([N,d+1],(1:N)',sum(x,2)+1);

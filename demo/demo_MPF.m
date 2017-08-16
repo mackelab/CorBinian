@@ -16,7 +16,7 @@ nSamplesData  = 10000; % draw from ground-truth parameters
 nSamplesEval  = 10000; % draw from paramter estimates for comparison
 burnIn        =  1000;
 
-model = 'ising_count_l_0';
+model = 'k_pairwise';
 
 h=0.25*randn(d,1)-3.5;           % generate random bias terms h
 J= 0.45*(randn(d)); J=triu(J,1); % generate interaction terms J 
@@ -67,7 +67,7 @@ lambdaHat = -lambdaHat; % conventions...
 
 % for small systems, we can compute P( X | lambdaTrue ) analytically
 if d < 20
- [features,description,x]=setup_features_maxent(d,'ising_count_l_0');
+ [features,description,x]=setup_features_maxent(d,model);
  [~,~,Ptrue, ~]=logPMaxEnt(features,lambdaTrue);
  EX = sum(bsxfun(@times, x', Ptrue'),2);
  description(isnan(description)) = d+1;

@@ -9,7 +9,7 @@ function [xSampled] = maxEnt_gibbs(nSamples, burnIn, thinning, lambda, x0, model
 %            In the latter case, initial chain member will be drawn.
 % -   model: string specifying the layout of the feature function for the
 %            maxEnt model. This slim version of the code actually only
-%            supports model = 'ising_count_l_0', but extensions are
+%            supports model = 'k_pairwise', but extensions are
 %            possible
 % -   mode:  string specifying mode of operation: if mode = 'default'
 %            xSampled contains standard Bernoulli variables.  If however
@@ -36,8 +36,8 @@ else
     error('Unknown value for parameter mode')
 end
    
-if nargin>5 && ~strcmp(model, 'ising_count_l_0')
-  disp('Warning: This is a slim version only supporting "ising_count_l_0"')
+if nargin>5 && ~strcmp(model, 'k_pairwise')
+  disp('Warning: This is a slim version only supporting "k_pairwise"')
 end
 
 h = lambda(1:d);

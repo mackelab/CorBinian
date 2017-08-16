@@ -42,7 +42,7 @@ function fx = maxEnt_features_slim(x, model)
         %description=[[1:d; (1:d)*nan],pairs,[1:d; (1:d)*nan]];  
         fx=[x;x(pairs(:,1)).*x(pairs(:,2));count_indicators];
         %keyboard
-    case 'ising_count_l_0' % same as 'ising_count', but has feature for K=0
+    case 'k_pairwise' % same as 'ising_count', but has feature for K=0
         pairs=nchoosek(1:d,2);
         count_indicators=zeros(d+1,1);
         count_indicators(sum(x)+1) = 1; 
