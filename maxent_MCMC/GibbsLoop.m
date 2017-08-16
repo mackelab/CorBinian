@@ -1,4 +1,4 @@
-function [xSampled, E] = GibbsLoop(nSamples,burnIn,d,xc,pairs,m,fm,h,J,L)
+function [xSampled, E] = GibbsLoop(nSamples,burnIn,d,xc,pairs,m,fm,h,J,V)
 
 xSampled = zeros(d*(d+3)/2+1, 1);      % return Bernoulli probabilities
 xTmp = xSampled; % intermediate storage for normalization (numerical issue)
@@ -31,14 +31,14 @@ for i = -burnIn:nSamples
    xc1(k) = true;  
    slk = sum( J( fm(xc1(pairs(m(:,k),1))&xc1(pairs(m(:,k),2)),k) ) );
    
-   L1 = L(idl+1); % one of the two variables xc(k), xc(l) is = 1
-   L2 = L(idl+2); % both variables are = 1
+   V1 = V(idl+1); % one of the two variables xc(k), xc(l) is = 1
+   V2 = V(idl+2); % both variables are = 1
       
   % compute joint probabilities for bivariate Bernoulli   
-   p = exp([h(k) +        sk  +       L1           % xc(k) = 1, xc(l) = 0
-            h(k) + h(l) + sl  + slk + L2;          % xc(k) = 1, xc(l) = 1
-                   h(l) +        sl + L1;          % xc(k) = 0, xc(l) = 1
-                                      L(idl)]);    % xc(k) = 0, xc(l) = 0
+   p = exp([h(k) +        sk  +       V1           % xc(k) = 1, xc(l) = 0
+            h(k) + h(l) + sl  + slk + V2;          % xc(k) = 1, xc(l) = 1
+                   h(l) +        sl + V1;          % xc(k) = 0, xc(l) = 1
+                                      V(idl)]);    % xc(k) = 0, xc(l) = 0
    p = p/sum(p); % normalize
   % update chain   
    rnd = rand(1);               % essentially, use the CDF for each of the
@@ -55,7 +55,7 @@ for i = -burnIn:nSamples
  pc(1:d) = pc(1:d) / (d-1);  % we just visited each x(k) d-1 times
  pc(d*(d+1)/2+(1:d+1)) = pc(d*(d+1)/2+(1:d+1))/ length(ks);
  
- %E(i) = h'*xc + xc'*J*xc + L(idl);
+ %E(i) = h'*xc + xc'*J*xc + V(idl);
  
  % Update online estimate of expected values
   if i>0
