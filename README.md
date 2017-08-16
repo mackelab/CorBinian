@@ -1,4 +1,4 @@
-![Modified from Aups (Own work) under GFDL , via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Heraldique_ours_passant2.svg](https://user-images.githubusercontent.com/8633855/29385509-462d1f06-82d8-11e7-84bf-1e97ffadd4f2.png "Bear")
+![Modified from Aups under GFDL , via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Heraldique_ours_passant2.svg](https://user-images.githubusercontent.com/8633855/29385509-462d1f06-82d8-11e7-84bf-1e97ffadd4f2.png "Bear, modified from Aups under GFDL , via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Heraldique_ours_passant2.svg")
 
 # CorBinian: A toolbox for modelling and simulation high-dimensional binary data and count-data with correlations
 
