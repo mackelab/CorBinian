@@ -15,7 +15,6 @@ function [lambdaHat, fD] = iterScaling(xTrain, fitoptions, beta, eps, fname, ifS
 %      .maxInnerIter: maximum number of allowed inner loop iterations
 %      .nSamples:  number of Gibbs samples for each new MCMC sample
 %      .burnIn  :  number of Gibbs samples to be discarded from MCMC sample
-%      .machine :  string specifying which Gibbs implementation is used
 %      .sig2_l2: regularization strength for the ridge-part of the bwVK
 %      .sig2_sm: regularization strength for the smoothing-part of the bwVK
 %   eps: 3-by-1 vector of error tolerances for moments related to h, J, V 
@@ -205,8 +204,8 @@ Sigma = []; % initialise prior covariance matrix for V(K) terms
    
     lambdaHat(:,iter)  = lambdaHat(:,iter-1);
     [Efy,~,x0(:,iter)] = maxEnt_gibbs_pair_C(fitoptions.nSamples(iter), ...
-                                             fitoptions.burnIn(iter), ...
-                        lambdaHat(:,iter),x0(:,iter-1),fitoptions.machine);
+                                           fitoptions.burnIn(iter), ...
+                                           lambdaHat(:,iter),x0(:,iter-1));
 
     % returning x0 (now a full n-by-1 vector) for use as initial element of
     % the next Gibbs chain, assuming that the distributions do not change 
