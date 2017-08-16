@@ -106,7 +106,7 @@ covsx = mfxTrain((d+1):(d*(d+1)/2)) - ...
 covsy = mfxEval((d+1):(d*(d+1)/2)) - ...              
        (mfxEval(fDescrJ(1, :)).* mfxEval(fDescrJ(2, :))); 
 plot(covsx, covsy, 'k.')
-titel('covariances')
+title('covariances')
 xlabel('est.')
 ylabel('data')
 axis square
