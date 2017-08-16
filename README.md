@@ -47,7 +47,15 @@ The code is published under the GNU General Public License. The code is provided
 
 The repository contains implementations of the methods presented in 
 
-###  JH Macke*, P Berens*, AS Ecker, AS Tolias and M Bethge: Generating Spike Trains with Specified Correlation Coefficients. Neural Computation 21(2), 397-423, 02 2009
+###  [M Nonnenmacher, C Behrens, P Berens, M Bethge, JH Macke: Signatures of criticality arise in simple neural population models with correlations, arXiv:1603.00097](http://www.mackelab.org/publications/#signatures-of-criticality-arise-in-simple-neural-population-models-with-correlations)
+
+Currently implemented: Code for fast iterative scaling for K-pairwise maximum entropy models ([Tkacik et al. 2014](https://doi.org/10.1371/journal.pcbi.1003408)), based on pairwise Gibbs sampling with Rao-Blackwellized estimators for first and second moments of the distribution. 
+
+* demo_iter_scaling.m: Fit a maximum entropy model (typically K-pairwise but code is flexible) using regularized fast iterative scaling with Rao-Blackwellization. 
+
+* demo_MPF.m: Fit a K-pairwise maximum entropy model using minimum probability flow. 
+
+###  [JH Macke*, P Berens*, AS Ecker, AS Tolias and M Bethge: Generating Spike Trains with Specified Correlation Coefficients. Neural Computation 21(2), 397-423, 02 2009](http://www.mackelab.org/publications/#signatures-of-criticality-arise-in-simple-neural-population-models-with-correlations)
 
 Currently implemented: Functions for fitting and sampling from dichotomised Gaussian models both with binary and count observations. Some of this code is equivalent to a previous toolbox written primarily by P Berens and JH Macke in the lab of M Bethge, the original code-package can be found at http://bethgelab.org/software/mvd/.
 
@@ -56,17 +64,17 @@ Currently implemented: Functions for fitting and analysing dichotomised Gausian 
 * demo_dich_gauss_01.m: Using dichotomised Gaussian on binary random variables
 * demo_dich_gauss_counts.m: Using discretized Gaussian on correlated counts with arbitrary marginal distributions
 
-### JH Macke, M Opper, M Bethge: Common input explains higher-order correlations and entropy in a simple model of neural population activity. Physical Review Letters 106, 208102, 05 2011
+### [JH Macke, M Opper, M Bethge: Common input explains higher-order correlations and entropy in a simple model of neural population activity. Physical Review Letters 106, 208102, 05 2011](http://www.mackelab.org/publications/#common-input-explains-higher-order-correlations-and-entropy-in-a-simple-model-of-neural-population-activity)
 
 * demo_flat_models.m: Using the dichotomised Gaussian on homogeneous population models, i.e. models in which all neurons are assumed to to have the same mean firing rate and same pairwise correlation.
 
-### G Schwartz, JH Macke, D Amodei, H Tang, MJ Berry: Low error discrimination using a correlated population code. Journal of Neurophysiology, 108(4), 1069-1088, 04 2012
+### [G Schwartz, JH Macke, D Amodei, H Tang, MJ Berry: Low error discrimination using a correlated population code. Journal of Neurophysiology, 108(4), 1069-1088, 04 2012](http://www.mackelab.org/publications/#low-error-discrimination-using-a-correlated-population-code)
 
 Currently implemented: Code for fitting binary second order maximum entropy models (Ising models) which also works for large populations of neurons (N>100). Much of this code is based on a previous implemented by Tamara Broderick et al, http://arxiv.org/abs/0712.2437.
 
 * demo_maxent_MCMC.m: Fit a second order maximum entropy model to a large population of neurons using MCMC and iterative scaling.
 
-### JH Macke, I Murray, P Latham: Estimation bias in maximum entropy models. Entropy 15:3109-3219, 08 2013
+### [JH Macke, I Murray, P Latham: Estimation bias in maximum entropy models. Entropy 15:3109-3219, 08 2013](http://www.mackelab.org/publications/#estimation-bias-in-maximum-entropy-models)
 
 Currently implemented: Functions for fitting maximum entropy models to small populations of neurons (N<15)
 
@@ -74,12 +82,6 @@ Missing: Methods for calculating bias
 
 * demo_maxent.m: Fit a maximum entropy model (typically second order but code is flexible) in a case which can be solved exactly, i.e. for which one does not need MCMC.
 
-###  M Nonnenmacher, C Behrens, P Berens, M Bethge, JH Macke: Signatures of criticality arise in simple neural population models with correlations, arXiv:1603.00097 [q-bio.NC]
 
-Currently implemented: Code for fast iterative scaling for K-pairwise maximum entropy models ([Tkacik et al. 2014](https://doi.org/10.1371/journal.pcbi.1003408)), based on pairwise Gibbs sampling with Rao-Blackwellized estimators for first and second moments of the distribution. 
-
-* demo_iter_scaling.m: Fit a maximum entropy model (typically K-pairwise but code is flexible) using regularized fast iterative scaling with Rao-Blackwellization. 
-
-* demo_MPF.m: Fit a K-pairwise maximum entropy model using minimum probability flow. 
 
 Additional code used specifically for [Nonnemacher et al. (2016)](https://arxiv.org/abs/1603.00097) can be found [here](https://github.com/mackelab/critical_retina). This includes scripts for fitting K-pairwise models to simulated population spike-data, and code for computing population measures such as the specific heat capacity from these models.
