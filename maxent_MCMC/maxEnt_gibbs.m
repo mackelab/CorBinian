@@ -9,18 +9,19 @@ function [xSampled] = maxEnt_gibbs(nSamples, burnIn, thinning, lambda, x0, model
 %            In the latter case, initial chain member will be drawn.
 % -   model: string specifying the layout of the feature function for the
 %            maxEnt model. This slim version of the code actually only
-%            supports model = 'ising_count_l_0'. 
-% -   mode:  string specifying what mode to operate in. If mode = 'default'
+%            supports model = 'ising_count_l_0', but extensions are
+%            possible
+% -   mode:  string specifying mode of operation: if mode = 'default'
 %            xSampled contains standard Bernoulli variables.  If however
-%            mode = 'rb', the sampler follows 'Rao-Blackwelling' in
-%            returning the Bernoulli probabilities p(x_k = 1)
+%            mode = 'rb', the sampler uses 'Rao-Blackwellizing' and
+%            returns only the Bernoulli probabilities p(x_k = 1)
 
 % Input formatting:
 %--------------------------------------------------------------------------
 if numel(x0) == 1
  d = x0;                                      % Generate x0 using E[X] from
  EX = exp(lambda(1:d))./(1+exp(lambda(1:d))); % a maxEnt model with only h,
- x0 = double(rand(d,1)<EX);                   % i.e. no parameters J, L
+ x0 = double(rand(d,1)<EX);                   % i.e. no parameters J, V
 end
 d = length(x0);
 
@@ -42,7 +43,7 @@ end
 h = lambda(1:d);
 J = lambda(d+1:d*(d+1)/2); % only uppder diag. entries of J, vectorized
 
-L = lambda(end-d:end);     % remember, L(1) is for K=0
+V = lambda(end-d:end);     % remember, V(1) is for K=0
 
 
 % Sharpen tools for the index battle ahead...
@@ -76,12 +77,12 @@ for i = 1:thinning*nSamples+burnIn
   
   % compute p(x_k = 0)
    idl = idl - xc(k);  % current activity count, x(k) IGNORED                
-   p0 = exp(L(idl)); 
+   p0 = exp(V(idl)); 
   % compute p(x_k = 1)
    xc1 = xc; xc1(k) = true; 
    p1(k) = exp( h(k) ...
            + sum( J( fm(xc1(pairs(m(:,k),1))&xc1(pairs(m(:,k),2)),k) ) )...
-           + L(idl+1)  ); % +1 because we now on top assume x(k) = 1
+           + V(idl+1)  ); % +1 because we now on top assume x(k) = 1
    p1(k)  = p1(k) / (p0 + p1(k)); % normalization step
  
   
