@@ -12,14 +12,14 @@ function [xSampled,E,xc] = maxEnt_gibbs_pair_C(nSamples, burnIn, lambda, x0)
 if numel(x0) == 1
  d = x0;                                      % Generate x0 using E[X] from
  EX = exp(lambda(1:d))./(1+exp(lambda(1:d))); % a maxEnt model with only h,
- x0 = double(rand(d,1)<EX);                   % i.e. no parameters J, L
+ x0 = double(rand(d,1)<EX);                   % i.e. no parameters J, V
 end
 d = length(x0);
 
 h = lambda(1:d);
 J = lambda(d+1:d*(d+1)/2); % only uppder diag. entries of J, vectorized
 
-L = lambda(end-d:end);     % remember, L(1) is for K=0
+V = lambda(end-d:end);     % remember, V(1) is for K=0
 
 
 % Sharpen tools for the index battle ahead...
@@ -43,10 +43,10 @@ xc = logical(x0); % current sample, will be continuously updated throughout
 
 [xSampled,xc,E] = pwGibbsMaxEnt_cluster(int32(nSamples),int32(burnIn),...
                                         int32(d),...
-                                   double(xc), pairs-1, m, fm-1, h, J, L);
+                                   double(xc), pairs-1, m, fm-1, h, J, V);
 %[xSampled,xc] = pwGibbsMaxEnt_malloc(int32(nSamples),int32(burnIn), ...
 %                                     int32(d),...
-%                                   double(xc), pairs-1, m, fm-1, h, J, L);
+%                                   double(xc), pairs-1, m, fm-1, h, J, V);
 % E = [];       
 end
 

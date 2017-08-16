@@ -25,7 +25,7 @@ function [xSampled] = maxEnt_gibbs_pair(nSamples, burnIn, thinning, lambda, x0, 
 if numel(x0) == 1
  d = x0;                                      % Generate x0 using E[X] from
  EX = exp(lambda(1:d))./(1+exp(lambda(1:d))); % a maxEnt model with only h,
- x0 = double(rand(d,1)<EX);                   % i.e. no parameters J, L
+ x0 = double(rand(d,1)<EX);                   % i.e. no parameters J, V
 end
 d = length(x0);
 
@@ -57,7 +57,7 @@ end
 h = lambda(1:d);
 J = lambda(d+1:d*(d+1)/2); % only uppder diag. entries of J, vectorized
 
-L = lambda(end-d:end);     % remember, L(1) is for K=0
+V = lambda(end-d:end);     % remember, V(1) is for K=0
 
 
 % Sharpen tools for the index battle ahead...
@@ -119,14 +119,14 @@ for i = 1:thinning*nSamples+burnIn
    xc1(k) = true;  
    slk = sum( J( fm(xc1(pairs(m(:,k),1))&xc1(pairs(m(:,k),2)),k) ) );
    
-   L1 = L(idl+1); % one of the two variables xc(k), xc(l) is = 1
-   L2 = L(idl+2); % both variables are = 1
+   V1 = V(idl+1); % one of the two variables xc(k), xc(l) is = 1
+   V2 = V(idl+2); % both variables are = 1
       
   % compute joint probabilities for bivariate Bernoulli   
-   p = exp([h(k) +        sk  +       L1           % xc(k) = 1, xc(l) = 0
-            h(k) + h(l) + sl  + slk + L2;          % xc(k) = 1, xc(l) = 1
-                   h(l) +        sl + L1;          % xc(k) = 0, xc(l) = 1
-                                      L(idl)]);    % xc(k) = 0, xc(l) = 0
+   p = exp([h(k) +        sk  +       V1           % xc(k) = 1, xc(l) = 0
+            h(k) + h(l) + sl  + slk + V2;          % xc(k) = 1, xc(l) = 1
+                   h(l) +        sl + V1;          % xc(k) = 0, xc(l) = 1
+                                      V(idl)]);    % xc(k) = 0, xc(l) = 0
    p = p/sum(p); % normalize
   % update chain   
    rnd = rand(1);               % essentially, use the CDF for each of the
