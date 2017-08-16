@@ -1,13 +1,14 @@
 %% criticality experiment script
 
-%% ------------------------------------------------------------------------
+clear all
+
 % (1) Set up the simulation, fitting & evaluation processing chain
 %%-------------------------------------------------------------------------
 
 % Settings concerning the overall retina simulation
 %--------------------------------------------------------------------------
 dRF = [100, 100]; % dimension of visual field, in pixels
-n = 100;  % number of RGCs to be simulated
+n = 50;  % number of RGCs to be simulated
 d = 20;   % number of RGCs to be included in a computational run
 nRuns = 1;     % number of computational runs
 pRet.Ce=eye(dRF(1)*dRF(2)); % covariance matrix for Gaussian-induced noise correlations
@@ -71,47 +72,34 @@ for i = 1:n
   pars.Sigma{i,2} = wishrnd(Sigma{2}, SigmaDFs(2))/SigmaDFs(2);
 end
 
-data.dRF = dRF; data.n = n; data.d = d; data.nRuns = nRuns;
-data.Nc = Nc; data.pRet = pRet; data.mode = mode; data.idxC = idxC;
-data.alpha = alpha; data.xMag = xMag;
-data.pars = pars; data.idxON = idxON; data.idxOFF = idxOFF;
-data.Sigma = Sigma; data.SigmaDFs = SigmaDFs;
-
-
-%%------------------------------------------------------------------------
-% (2) Generate input images and do the retina simulation
+%% (2) Generate input images and perform the retina simulation
 %%-------------------------------------------------------------------------
 disp('Generating RGC filters and spiking data')
 
-[data.W, data.RGCcen] = genFilters(dRF,n,mode,pars); 
-data.W=sparse(data.W);
+[sim.W, sim.RGCcen] = genFilters(dRF,n,mode,pars); 
+sim.W=sparse(sim.W);
 
-data.spikes = zeros(n,N);
+sim.spikes = zeros(n,N);
 for i = 1:floor(N/Nc)
   disp([' - chunk ', num2str(i), ' out of ', num2str(floor(N/Nc))])
   x = xMag * spatialPattern([dRF(1),dRF(2),Nc], -alpha);
-  tmp = retSim(x,data.W,pRet);
-  data.spikes(:,(i-1)*Nc+1:i*Nc) = tmp.spikes;
+  tmp = retSim(x,sim.W,pRet);
+  sim.spikes(:,(i-1)*Nc+1:i*Nc) = tmp.spikes;
 end
 clear tmp x;
-disp('Computing correlations')
-data.spkCorrs = full(corr(data.spikes'));
-data.spkCov   = full(cov(data.spikes'));
-data.RFoverlap = full(data.W*data.W');
 
-%% ------------------------------------------------------------------------
-% (3) Fit the statistical model to data and evaluate the quality of fit
+%% (3) Fit the statistical model to data and evaluate the quality of fit
 %%-------------------------------------------------------------------------
 disp('Fitting maxEnt model')
-datac = data.spikes(idxC,:);
+fxTrain = sim.spikes(idxC,:);
 disp('- augmenting data for ML')
 if augmentData % current method to avoid infinities in the ML fitting
- datac(:,end+1:end+d) = triu(ones(d,d));
- datac(:,end+1)       = zeros(d,1);
+ fxTrain(:,end+1:end+d) = triu(ones(d,d));
+ fxTrain(:,end+1)       = zeros(d,1);
 end
 disp('- computing initialization for minFunc')
 % for comparison: evaluate independent model, i.e. J = 0,L = 0
-EX = full(mean(datac,2));
+EX = full(mean(fxTrain,2));
 idxL = d*(d+1)/2 + (1:d+1);
 lambdaInd = zeros(d*(d+3)/2+1,1); 
 mfxInd = zeros(size(lambdaInd));
@@ -128,36 +116,20 @@ if ~isempty(idxL)
 end
 clear EX tmp idxL tmp
 
-disp('- data size is ')
-size(datac)
-
-datac(datac>1) = 1;
+fxTrain(fxTrain>1) = 1;
 disp('- starting MPF fitting')
-[lambdaMPF,~,~,~,~] = fit_maxent_mpf(datac',fitoptions);
+[lambdaMPF,~,~,~,~] = fit_maxent_mpf(fxTrain',fitoptions);
 lambdaMPF = -lambdaMPF; % conventions...
 
-results.fitoptions = fitoptions; 
-results.lambda = lambdaMPF; 
-
-%%
 disp('Generating data from fitted model for evaluation')
 mfxTrain = zeros(d*(d+3)/2+1,1);
 for i = 1:floor(N/Nc) 
-  [fxTrain, ~] = setup_features_maxent(datac(:, (i-1)*Nc+1:i*Nc)', modelFit);
-   mfxTrain = mfxTrain + mean(fxTrain, 1)'; 
+  [ifxTrain, ~] = setup_features_maxent(fxTrain(:, (i-1)*Nc+1:i*Nc)', modelFit);
+   mfxTrain = mfxTrain + mean(ifxTrain, 1)'; 
 end
+clear ifxTrain; 
 mfxTrain = mfxTrain / floor(N/Nc);
-mfxEval = zeros(d*(d+3)/2+1,1); 
-tmpPwd = pwd;
-for i=1:nChains
- disp(['- Chain #', num2str(i), ' of ', num2str(nChains)]);
- tmp = maxEnt_gibbs_pair_C(nSamplesEval, burnIn, lambdaMPF, d);
- storeTmp(:,i) = tmp;
- if mean((tmp-mfxTrain).^2)<mean((mfxEval-mfxTrain).^2) % if better than current chain results
-   mfxEval = tmp;
- end 
-end
-clear fxTrain; 
+mfxEval = maxEnt_gibbs_pair_C(nSamplesEval, burnIn, lambdaMPF, d);
 
 % visualize results
 
