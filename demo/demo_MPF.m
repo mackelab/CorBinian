@@ -36,9 +36,8 @@ thinning     =     1; % distance in sequence between Gibbs samples to be
 disp('Generating training data')
 xTrain = maxEnt_gibbs(nSamplesData, burnIn, thinning, lambdaTrue, x0, ...
                       model);
+% compute feature moments E[f(X)] of the data for later comparison with fit
 mfxTrain = full(mean(setup_features_maxent(xTrain', model),1))';
-
-pause;
 
 %% train model
 %--------------------------------------------------------------------------
@@ -92,7 +91,7 @@ end % if d < 20
                     
 % visualize results
 
-figure; 
+figure('Name','maxEnt fitting with MPF', 'Position', [500, 500, 1200, 400])
 subplot(131)
 plot(mfxTrain(1:d), mfxEval(1:d), 'k.');
 title('first moments')
@@ -101,8 +100,13 @@ ylabel('data')
 axis square
 
 subplot(132)
-plot(mfxTrain(d+1:end-d-1), mfxEval(d+1:end-d-1), 'k.')
-title('second moments')
+fDescrJ = nchoosek(1:d,2)'; 
+covsx = mfxTrain((d+1):(d*(d+1)/2)) - ...              
+       (mfxTrain(fDescrJ(1, :)).* mfxTrain(fDescrJ(2, :))); 
+covsy = mfxEval((d+1):(d*(d+1)/2)) - ...              
+       (mfxEval(fDescrJ(1, :)).* mfxEval(fDescrJ(2, :))); 
+plot(covsx, covsy, 'k.')
+titel('covariances')
 xlabel('est.')
 ylabel('data')
 axis square

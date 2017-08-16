@@ -37,10 +37,9 @@ EX = exp(lambdaTrue(1:d))./(1+exp(lambdaTrue(1:d)));
 x0 = double(rand(d,1)<EX);                           
 
 disp('Generating training data')
+% iterative scaling only needs the feature moments E[f(X)] of the data
 [mfxTrain,~,~] = maxEnt_gibbs_pair_C(nSamplesData, burnIn, ...
                                      lambdaTrue, x0);
-
-pause;
  
 %% train model
 %--------------------------------------------------------------------------
@@ -56,15 +55,14 @@ fitoptions.lambda0 = lambdaInd;
 clear EX
 
           
-hJV = ones(3,1); % booleans giving whether to include h, J and/or V 
-ifbwVK = true;   % flag for blockwise update of parameter terms V
+fitoptions.hJV = ones(3,1); % booleans giving if to include h, J and/or V 
+fitoptions.ifbwVK = true;   % flag for blockwise update of parameter V
 
-ifSave = false;  % whether to store results on disk
-fname = '';      % filename for storing results on disk
-
+fitoptions.ifSave = false;  % whether to store results on disk
+fitoptions.fname = '';      % filename for storing results on disk
 
 fitoptions.regular = 'l1';
-beta = 0.00001*ones(d*(d+1)/2 + d+1,1); % strength of l1 regularizer
+fitoptions.beta = 0.00001*ones(d*(d+1)/2+d+1,1); % l1 regularizer strength
 fitoptions.nRestart = 1;
 fitoptions.modelFit = 'k_pairwise';
 
@@ -72,7 +70,7 @@ fitoptions.nSamples = 100;
 fitoptions.burnIn   =  10;
 fitoptions.maxIter  = 1000;
 fitoptions.maxInnerIter = 1;        
-eps = [0.05, 0.05, 0.1]; % convergence criteria, empty loads defaults
+fitoptions.eps = [0.05, 0.05, 0.1]; % convergence criteria
 
 % create sequence of increasing MCMC chain lengths for each update step
 a = fitoptions.nSamples; % initial MCMC chain lengths
@@ -81,8 +79,7 @@ fitoptions.nSamples = [0;round(a * 2.^((1:fitoptions.maxIter)'/tau))];
 fitoptions.nSamples = floor(fitoptions.nSamples/100)*100;          
 
 disp('- starting iterative scaling')
-[lambdaHat, fitDiagnostics] = iterScaling(mfxTrain, fitoptions, ...
-                          beta, eps, fname, ifSave, hJV, ifbwVK);
+[lambdaHat, fitDiagnostics] = iterScaling(mfxTrain, fitoptions);
 
 %pause;
 
@@ -116,7 +113,8 @@ end % if d < 20
                     
 % visualize results
 
-figure; 
+figure('Name','maxEnt fitting with fast iterative scaling', ...
+       'Position', [500, 500, 1200, 400])
 subplot(131)
 plot(mfxTrain(1:d), mfxEval(1:d), 'k.');
 title('first moments')
@@ -125,8 +123,13 @@ ylabel('data')
 axis square
 
 subplot(132)
-plot(mfxTrain(d+1:end-d-1), mfxEval(d+1:end-d-1), 'k.')
-title('second moments')
+fDescrJ = nchoosek(1:d,2)'; 
+covsx = mfxTrain((d+1):(d*(d+1)/2)) - ...              
+       (mfxTrain(fDescrJ(1, :)).* mfxTrain(fDescrJ(2, :))); 
+covsy = mfxEval((d+1):(d*(d+1)/2)) - ...              
+       (mfxEval(fDescrJ(1, :)).* mfxEval(fDescrJ(2, :))); 
+plot(covsx, covsy, 'k.')
+title('covariances')
 xlabel('est.')
 ylabel('data')
 axis square
