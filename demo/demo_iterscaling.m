@@ -12,10 +12,11 @@
 %  - To continue, hit any button.
 %  - Read along in the demo file to follow what's happening.
 
+clear all
 
 % Simulation setup
 %--------------------------------------------------------------------------
-d=30;                  % data dimensionality
+d=15;                  % data dimensionality
 nSamplesData  = 10000; % draw from ground-truth parameters
 nSamplesEval  = 10000; % draw from paramter estimates for comparison
 burnIn        =  1000;
@@ -26,8 +27,6 @@ lambda=hJ2lambda(h,J);           % vectorize
 V = [0; linspace(3.5, -1, d)'];
 lambdaTrue = [lambda;V];         % append population count terms V
 
-trainMethod = 'MPF';
-
 %% generate training data
 %--------------------------------------------------------------------------
 % Initialize training data-generating MCMC chain with a sample drawn from
@@ -37,7 +36,7 @@ x0 = double(rand(d,1)<EX);
 
 disp('Generating training data')
 [mfxTrain,~,~] = maxEnt_gibbs_pair_C(nSamplesData, burnIn, ...
-                               lambdaTrue, x0, 'cluster');
+                                     lambdaTrue, x0);
 
 pause;
  
@@ -64,11 +63,10 @@ fname = '';      % filename for storing results on disk
 
 fitoptions.regular = 'l1';
 beta = 0.00001*ones(d*(d+1)/2 + d+1,1); % strength of l1 regularizer
-fitoptions.machine  = 'cluster';
 fitoptions.nRestart = 1;
 fitoptions.modelFit = 'ising_count_l_0';
 
-fitoptions.nSamples = 200;    
+fitoptions.nSamples = 100;    
 fitoptions.burnIn   =  10;
 fitoptions.maxIter  = 1000;
 fitoptions.maxInnerIter = 1;        
@@ -80,6 +78,7 @@ tau = 400;               % update steps over which chain length doubles
 fitoptions.nSamples = [0;round(a * 2.^((1:fitoptions.maxIter)'/tau))];
 fitoptions.nSamples = floor(fitoptions.nSamples/100)*100;          
 
+disp('- starting iterative scaling')
 [lambdaHat, fitDiagnostics] = iterScaling(mfxTrain, fitoptions, ...
                           beta, eps, fname, ifSave, hJV, ifbwVK);
 
@@ -98,7 +97,7 @@ if d < 20
  x1(:,end+1) = 1; 
  EXX = sum(bsxfun(@times, (x1(:,description(1,d+1:d*(d+1)/2))...
                         .* x1(:,description(2,d+1:d*(d+1)/2)))',Ptrue'),2);
- EK = zeros(length(L),1);
+ EK = zeros(length(V),1);
  for k = 1:length(EK)
   EK(k) = sum((sum(x,2)==(k-1)) .* Ptrue);
  end
@@ -109,7 +108,7 @@ else % for large systems, sample (long) MCMC chain
 
  disp('Generating data from model fit')
  [mfxEval,~,~] = maxEnt_gibbs_pair_C(nSamplesEval, burnIn, ...
-                                     lambdaHat, x0, fitoptions.machine);
+                                     lambdaHat, x0);
     
 end % if d < 20  
                     
