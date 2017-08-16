@@ -1,42 +1,43 @@
-function [lambdaHat, fD] = iterScaling(xTrain, fitoptions, beta, eps, fname, ifSave, hJV, ifbwVK, sig2_l2, sig2_sm)
-% code for fitting a maxEnt model with regularised iterative scaling.
-% Minimizes the negative log-likelihood of the data in xTrain under the 
-% maximum entropy model by (blockwise) coordinate descent. 
+function [lambdaHat, fD] = iterScaling(xTrain, fitoptions)
+% regularised and Rao-Blackwellizediterative scaling for maxEnt modelling
+% 
+% Minimizes the regularized negative log-likelihood of the data in xTrain 
+% under the maximum entropy model by (blockwise) coordinate descent. 
 % 
 % input:
 %   xTrain:     n-by-N matrix of N many n-dimensional training patterns x 
 %               OR #features-by-1 vector of sample means E_emp[f(X)]
 %   fitoptions: structure containing options for the fitting procedure
-%      .modelFit:  string that specifies which model was used
-%      .regular:   string that specifies which regularization is to be used
-%      .lambda0:   #features-by-1 vector of initial values for lambda
-%      .nRestarts: number of complete algorithm restarts (test convexity)
-%      .maxIter:   maximal number of allowed main loop iterations
-%      .maxInnerIter: maximum number of allowed inner loop iterations
-%      .nSamples:  number of Gibbs samples for each new MCMC sample
-%      .burnIn  :  number of Gibbs samples to be discarded from MCMC sample
-%      .sig2_l2: regularization strength for the ridge-part of the bwVK
-%      .sig2_sm: regularization strength for the smoothing-part of the bwVK
-%   eps: 3-by-1 vector of error tolerances for moments related to h, J, V 
-%   fname: (optional) string of file name for intermediate result storage
-%   ifSave: boolean specifying whether or not to save intermediate results
-%   hJV: 3-by-1 vector of booleans giving whether to include h, J and/or V 
-%   ifbwVK: boolean specifying whether or not to update V(K) block-wise
-%   sig2_l2: parameter for Gaussian prior on V(K), controls ridge part
-%   sig2_sm: parameter for Gaussian prior on V(K), controls smoothness part
+%    .modelFit:  string that specifies which model was used
+%    .regular:   string that specifies which regularization is to be used
+%    .lambda0:   #features-by-1 vector of initial values for lambda
+%    .nRestarts: number of complete algorithm restarts (test convexity)
+%    .maxIter:   maximal number of allowed main loop iterations
+%    .maxInnerIter: maximum number of allowed inner loop iterations
+%    .nSamples:  number of Gibbs samples for each new MCMC sample
+%    .burnIn  :  number of Gibbs samples to be discarded from MCMC sample
+%    .sig2_l2: regularization strength for the ridge-part of the bwVK
+%    .sig2_sm: regularization strength for the smoothing-part of the bwVK
+%    .eps: 3-by-1 vector of error tolerances for moments related to h, J, V 
+%    .fname: (optional) string of file name for intermediate result storage
+%    .ifSave: boolean specifying whether or not to save intermediate results
+%    .hJV: 3-by-1 vector of booleans giving whether to include h,J and/or V 
+%    .ifbwVK: boolean specifying whether or not to update V(K) block-wise
+%    .sig2_l2: parameter for Gaussian prior on V(K), controls ridge part
+%    .sig2_sm: parameter for Gaussian prior on V(K), smoothness part
 %
 % output:
 %   lamdaHat:   #features-by-1 vector of lambda as estimated from data
 %   fD:         structure containing several fitting diagnostics 
-%      .deltaLL:     full sequence of changes in negative log-likelihood
 %      .idxBad:      list of 'bad' feature dimensions (where E[f_i(X)] = 0)
-%      .lambdaTrace: all intermediate estimates of lambda
+%      .deltaLLs:    full sequence of changes in negative log-likelihood
 %      .idxUpdate:   sequence of dimensions of lambda updated during fit
-%      .deltas:      all candidate optimal update step sizes
 %      .Efx:         sought-after data means E_emp[f(X)]
 %      .Efy:         actually returned model means E_lambda[f(X)] 
-% By default, not all output diagnostics are fully returned, to save on
-% memory, e.g. when running multiple fits in parallel. See bottom of file.
+%      .nRMSE:       normalized RMSE between E_lambda[f(X)] and E_emp[f(X)]
+%      .nIters:      number of iterations before convergence
+% By default, not all possible output diagnostics are fully returned.
+% See bottom of file.
 
 ticTime = now; % current time, base unit is 1 day
 
@@ -52,40 +53,48 @@ else                  % if feeding expectation of features E[f(X)] directly
 end
 clear fxTrain % may take a whole lot of memory 
 
-if nargin < 9 || isempty(sig2_l2)
+if ~isfield(fitoptions, 'sig2_l2') || isempty(fitoptions.sig2_sm)
   fitoptionsbwVK.sig2_l2 = 400;
 else 
-  fitoptionsbwVK.sig2_l2 = sig2_l2;
-  clear sig2_l2;
+  fitoptionsbwVK.sig2_l2 = fitoptions.sig2_l2;
 end
 
 % set strength of V(K)-smoothing
-if nargin < 10 || isempty(sig2_sm)
-  sig2_sm = 1; 
+if ~isfield(fitoptions, 'sig2_sm') || isempty(fitoptions.sig2_sm)
+  fitoptionsbwVK.sig2_sm = (0.0016*(n/10)^3 + 0.05);
+else    
+  fitoptionsbwVK.sig2_sm = fitoptions.sig2_sm;
 end
-fitoptionsbwVK.sig2_sm = sig2_sm * (0.0016*(n/10)^3 + 0.05);
-%fitoptionsbwVK.sig2_sm = sig2_sm*glmval([.009;.0436;-.0064;.0019], ...
-%                    [(n/10),(n/10)^2,(n/10)^3], 'identity'); 
-clear sig2_sm     
+
 % (regression coefficients obtained from 
 %  parameter variances of previous fitting results)
-   
-if nargin < 7 || isempty(hJV)
-  hJV = ones(3,1); % default: include terms for h, J and V(K) (full model)
+
+if ~isfield(fitoptions, 'hJV') || isempty(fitoptions.hJV)
+  fitoptions.hJV = ones(3,1); % default: include terms for h, J and V(K) 
 end
-if nargin < 6 || isempty(ifSave)
-  ifSave = true; % default: save intermediate results after each iteration
+if ~isfield(fitoptions, 'ifbwVK') || isempty(fitoptions.ifbwVK)
+  fitoptions.ifbwVK = 1; % default: blockwise update for V(K) for all K
 end
-if nargin < 5 % note that setting fname = [] is possible for test purposes
-  fname = date;  % default: save with current date
-  ifSave = false;
+if ~isfield(fitoptions, 'ifSave') || isempty(fitoptions.ifSave)
+  fitoptions.ifSave = true; % save intermediate results after each iteration
 end
-if nargin < 4 || isempty(eps)
-  eps = 10^(-2) * ones(3,1); % default error tolerance: 1%
+if ~isfield(fitoptions, 'fname') || isempty(fitoptions.fname)
+  fitoptions.fname = date;  % default: save with current date
 end
-if nargin < 3 || isempty(beta)
-  beta = zeros(size(Efx)); % default: no regularization
+if ~isfield(fitoptions, 'eps') || isempty(fitoptions.eps)
+  fitoptions.eps = 10^(-2) * ones(3,1); % default error tolerance: 1%
 end
+if ~isfield(fitoptions, 'beta') || isempty(fitoptions.beta)
+  fitoptions.beta = zeros(size(Efx)); % default: no regularization
+end
+
+% shorthands
+hJV    = fitoptions.hJV;
+ifbwVK = fitoptions.ifbwVK;
+ifSave = fitoptions.ifSave;
+fname  = fitoptions.fname;
+eps    = fitoptions.eps;
+beta   = fitoptions.beta;
 
 if all(size(fitoptions.nSamples)<2) % if nSamples is constant for all iters
   fitoptions.nSamples = fitoptions.nSamples*[0;ones(fitoptions.maxIter,1)];
@@ -308,22 +317,20 @@ Sigma = []; % initialise prior covariance matrix for V(K) terms
        
     % Compute errors on E[f(X)], split into blocks corresponding to (h,J,V)
     MSE.h = mean( (Efx(1:n)-Efy(1:n)).^2 );
-    MSE.V = mean( (Efx(end-n:end)-Efy(end-n:end)).^2 ); 
-    MSE.J = mean( (Efx((n+1):(n*(n+1)/2))-Efy((n+1):(n*(n+1)/2))).^2 ); 
-    
-    covs.y = Efy((n+1):(n*(n+1)/2)) - ...              % cov(a,b) = E(a*b) -
-          (Efy(fDescrJ(1, :)).* Efy(fDescrJ(2, :))); %            E(a)*E(b)
+    %MSE.J = mean( (Efx((n+1):(n*(n+1)/2))-Efy((n+1):(n*(n+1)/2))).^2 );     
+    covs.y = Efy((n+1):(n*(n+1)/2)) - ...              
+            (Efy(fDescrJ(1, :)).* Efy(fDescrJ(2, :))); 
     MSE.cov = mean( (covs.x - covs.y).^2 );
-
-    nRMSEperc.h = sqrt(MSE.h)/sqrt(mean(Efx(1:n).^2));        % percentage 
-    nRMSEperc.V = sqrt(MSE.V)/sqrt(mean(Efx(end-n:end).^2));  % of RMSEs
-    nRMSEperc.cov = sqrt(MSE.cov)/sqrt(mean(abs(covs.x).^2)); % of Efx
+    MSE.V = mean( (Efx(end-n:end)-Efy(end-n:end)).^2 ); 
     
-  %   fD.RMSEprcs(1,iter) = RMSEperc.h;
-  %   fD.RMSEprcs(2,iter) = NaN; % would be RMSE on E[x_i*x_j], we do covs
-  %   fD.RMSEprcs(3,iter) = RMSEperc.V;
-  %   fD.RMSEprcs(4,iter) = RMSEperc.cov;
-  
+    % note on interpreting errors : finite sample sizes nSamples(iter) 
+    % introduce variance on the estimated RMSEs, i.e. for small nSamples, 
+    % errors may appear large even for a 'perfect' model estimate (h,J,V) !
+    
+    nRMSE.h = sqrt(MSE.h)/sqrt(mean(Efx(1:n).^2));        % normalized
+    nRMSE.V = sqrt(MSE.V)/sqrt(mean(Efx(end-n:end).^2));  % RMSEs
+    nRMSE.cov = sqrt(MSE.cov)/sqrt(mean(abs(covs.x).^2)); % of E[f(X)]
+      
     % Intermediate save
     thinning = 10; % make intermediate save only every 10-th 
                    % parameter update
@@ -332,33 +339,20 @@ Sigma = []; % initialise prior covariance matrix for V(K) terms
      idxIter = idxj(iter);
      x0Iter  = x0(:,iter);
      lambdaIter = lambdaHat(:,iter);
-     deltaIter = []; % these are large, yet also
-     deltaLL = [];    % reproducible from the rest
-     fnames = [fname,'_Iter_',num2str(iter, '%0.5d')];
-     fnames=['/home/nonnenmacher/critical_retina/param_fits/',fname,...
-             '/', fnames,'.mat'];
+     deltaIter = []; % these are large, and also
+     deltaLL = [];   % reproducible from the rest
+     fnames=[fname, '/', [fname,'_Iter_',num2str(iter, '%0.5d')],'.mat'];
      save(fnames, 'deltaLL', 'deltaIter', 'idxIter', 'Efy', 'x0Iter', ...
                              'lambdaIter', 'MSE', 'nRMSEperc', 'covs',  ...
                               'thinning') 
     end
     
-    % Check for convergence
-    % 1. Ran for more than 72 h hours
-    tocTime = now; 
-    if (tocTime - ticTime) >  3 * (n/100)^2 
-      break;      
-    end
-    % 2. Did more updates than 10 times the number of parameters
-    if iter >  (10 * n * (n+3) / 2)
-      break;
-    end
-    % 3. Error smaller than tolerance    
-    if ( (nRMSEperc.h < eps(1)) && ...   % check h, V first, 
-         (nRMSEperc.V < eps(3)) && ... % as is faster
-         (nRMSEperc.cov  < eps(2)) ) 
-          break;
+    % Check for convergence: Error smaller than tolerance    
+    if ((nRMSE.h < eps(1)) && (nRMSE.V < eps(3)) && (nRMSE.cov  < eps(2))) 
+        break;
     end
     % after some time even before 'convergence by time', freeze #sweeps
+    tocTime = now; 
     if (tocTime - ticTime) > (n/100)^2  % after first day
        fitoptions.nSamples(iter:end) = fitoptions.nSamples(iter);     
     end
@@ -367,37 +361,35 @@ Sigma = []; % initialise prior covariance matrix for V(K) terms
 
   % Final save
   
+  if ifSave
      idxIter = idxj(iter);
      x0Iter  = x0(:,iter);
      lambdaIter = lambdaHat(:,iter);
      deltaIter = delta;
-     fnames = [fname,'_Iter_',num2str(iter, '%0.5d')];
-     fnames=['/home/nonnenmacher/critical_retina/param_fits/',fname,...
-             '/', fnames,'.mat'];
-     %save(fnames, 'deltaLL', 'deltaIter', 'idxIter', 'Efy', 'x0Iter', ...
-     %                        'lambdaIter', 'MSE', 'nRMSEperc', 'covs', ...
-     %                        'thinning') 
-fD = [];                          
-      fD.deltaLLall = deltaLLall;   % possible gains in log-likelihood
-      fD.deltaLLs = deltaLLs(1:iter-1);  % trace of realized gains in ll
-      fD.lambdaTrace = lambdaHat(:,2:iter); % trace of parameter estimates
-      fD.idxUpdate = idxj(2:iter); % trace of parameter picked for updating
-      fD.deltas = deltas(:,1:iter-1); % trace of parameter sizes of changes 
-%      fD.EfyTrace = Efys(:,2:iter);  % trace of resulting expected values
-      fD.Efy = Efy; % what we did achieve in quality up to this iteration
-%      fD.x0 = x0(:,1:iter); % trace of initial chain elements
-%      fD.MSE = MSE;            % mean-squared errors on final results, 
-      fD.nRMSEperc = nRMSEperc; % absolute and rel. to E[f(X)] magnitudes
-%      fD.maxK = fitoptionsbwVK.maxK;
-      fD.eps = eps;
-      fD.fitoptions = fitoptions;
-      fD.fitoptionsbwVK = fitoptionsbwVK;
-      fD.nIters = iter-1; % 'first iteration' is initialization
-%      fD.MSEprcs = fD.MSEprcs(:, 2:iter);    
-
+     save(fname,  'deltaLL', 'deltaIter', 'idxIter', 'Efy', 'x0Iter', ...
+                             'lambdaIter', 'MSE', 'nRMSEperc', 'covs', ...
+                             'thinning') 
+  end
+  fD = [];                          
+% fD.deltaLLall = deltaLLall;   % possible gains in log-likelihood
+  fD.deltaLLs = deltaLLs(1:iter-1);  % trace of realized gains in ll
+% fD.lambdaTrace = lambdaHat(:,2:iter); % trace of parameter estimates
+  fD.idxUpdate = idxj(2:iter); % trace of parameter picked for updating
+% fD.deltas = deltas(:,1:iter-1); % trace of parameter sizes of changes 
+% fD.EfyTrace = Efys(:,2:iter);   % trace of resulting expected values
+  fD.Efy = Efy; % what we did achieve in quality up to this iteration
+% fD.x0 = x0(:,1:iter); % trace of initial chain elements
+  fD.nRMSE = nRMSE; % relative normalized RMS error of E[f(X)] 
+% fD.maxK = fitoptionsbwVK.maxK;
+  fD.fitoptions = fitoptions;
+  fD.fitoptionsbwVK = fitoptionsbwVK;
+  fD.nIters = iter-1; % 'first iteration' is initialization
+  if ifSave
+    fD.fnames = fnames;
+  end
 end
 
-lambdaHat = lambdaIter; 
+lambdaHat = lambdaHat(:,iter); 
 
 disp('fitting completed')
 end
