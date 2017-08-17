@@ -1,6 +1,6 @@
 ![Modified from Aups under GFDL , via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Heraldique_ours_passant2.svg](https://user-images.githubusercontent.com/8633855/29385509-462d1f06-82d8-11e7-84bf-1e97ffadd4f2.png "Bear, modified from Aups under GFDL , via Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Heraldique_ours_passant2.svg")
 
-# CorBinian: A toolbox for modelling and simulation high-dimensional binary data and count-data with correlations
+# CorBinian: A toolbox for modelling and simulating high-dimensional binary data and count-data with correlations
 
 Corbinian is a toolbox for statistical modelling of multivariate binary and count data with correlations. It contains multiple statistical models, including different variants of maximum entropy models (with fitting algorithms that scale to >100 dimensions), Dichotomized Gaussian models, as well as tools for estimating various statistical quantities of interest from these models. It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but many of the methods will be applicable more generally. 
 
