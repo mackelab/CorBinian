@@ -20,7 +20,9 @@ First off, thanks for taking the time to contribute!
 
 #### **Do you have questions about the source code?**
 
-* Feel free to ask [us](https://www.mackelab.org/contact/) any question related to the usage of our code.
+* Feel free to ask any question related to the usage of our code. 
+The maintainers of this repository are [Marcel Nonnemacher](https://github.com/mnonnenm) and [Jakob Macke](https://github.com/jahma). 
+
 
 #### **Do you intend to add a new feature or change an existing one?**
 
