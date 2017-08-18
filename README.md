@@ -2,12 +2,14 @@
 
 # CorBinian: A toolbox for modelling and simulating high-dimensional binary data and count-data with correlations
 
-Corbinian is a toolbox for statistical modelling of multivariate binary and count data with correlations. It contains multiple statistical models, including different variants of maximum entropy models (with fitting algorithms that scale to >100 dimensions), Dichotomized Gaussian models, as well as tools for estimating various statistical quantities of interest from these models. It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but many of the methods will be applicable more generally. 
+CorBinian is a toolbox for statistical modelling of multivariate binary and count data with correlations. 
+
+CorBinian supports multiple statistical models, including different variants of maximum entropy models (with fitting algorithms that scale to >100 dimensions), Dichotomized Gaussian models, as well as tools for estimating various statistical quantities of interest from these models. It has been developed and implemented with the goal of modelling spike-train recordings from neural populations, but many of the methods will be applicable more generally. 
 
 This repository is based on --- and replaces --- the original toolbox [pop_spike](https://bitbucket.org/mackelab/pop_spike).
 
 
-We have tried to make conventions compatible across the different projects and to share utility functions, but there is still some mismatch in conventions and redundant functions.
+We tried to make conventions compatible across the different projects and to share utility functions, but there is still some mismatch in conventions and redundant functions.
 
 See [github.com/mackelab](https://github.com/mackelab) or [mackelab.org/code](http://www.mackelab.org/code) for more repositories by the group.
 
