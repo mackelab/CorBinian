@@ -14,7 +14,7 @@ nRuns = 1;     % number of computational runs
 pRet.Ce=eye(dRF(1)*dRF(2)); % covariance matrix for Gaussian-induced noise correlations
 pRet.magnitude = 1;      % parameters governing the nonlinearity mapping
 pRet.gain      = 1;      % from linear filter responses to RGC output
-pRet.offset    = -2.944; % spiking probability
+pRet.offset    = -3.5; % spiking probability
 mode.tiling = 'random';           % arrangement of RGC centres 
 mode.RF = 'center-surround DoG';  % layout of RGC receptive fields
 
@@ -118,8 +118,8 @@ clear EX tmp idxL tmp
 
 fxTrain(fxTrain>1) = 1;
 disp('- starting MPF fitting')
-[lambdaMPF,~,~,~,~] = fit_maxent_mpf(fxTrain',fitoptions);
-lambdaMPF = -lambdaMPF; % conventions...
+[lambdaHat,~,~,~,~] = fit_maxent_mpf(fxTrain',fitoptions);
+lambdaHat = -lambdaHat; % conventions...
 
 disp('Generating data from fitted model for evaluation')
 mfxTrain = zeros(d*(d+3)/2+1,1);
@@ -129,7 +129,7 @@ for i = 1:floor(N/Nc)
 end
 clear ifxTrain; 
 mfxTrain = mfxTrain / floor(N/Nc);
-mfxEval = maxEnt_gibbs_pair_C(nSamplesEval, burnIn, lambdaMPF, d);
+mfxEval = maxEnt_gibbs_pair_C(nSamplesEval, burnIn, lambdaHat, d);
 
 % visualize results
 
@@ -162,3 +162,39 @@ xlabel('population count K')
 ylabel('probability P(K)')
 legend({'data', 'est.'})
 title('population counts')
+
+
+%% (4) Estimate system entropy and specific heat capacity
+%%-------------------------------------------------------------------------
+
+% The negative log probability of any multivariate binary pattern X
+% -log P(X) = - lambda' * f(X) 
+% is often interpreted as 'energy', even if the data does not come from a 
+% thermodynamics setting - as for instance in this neuroscience example. 
+% Entropy E[-log P(X)] and specific heat capacity Var[-log P(X)] / d 
+% are correspondingly commonly used statistics to characterize P(X). 
+% Perturbing P(X) by an additional 'temperature' parameter T that inversely
+% scales the energy of each pattern through 
+% energy(X) = - 1/T * lambda' * f(X)
+% for a sequence of T's allows to investiage the phase behavior of P(X). 
+
+% returns first and second moments of energy at various temperatures Ts(i)
+Ts = []; % loads defaults
+[MoEs, Ts] = moments_of_energy(lambdaHat, d, burnIn, 5*nSamplesEval, Ts);
+
+
+c = (MoEs(2,:) - MoEs(1,:).^2)/d; % specific heat capacity for each Ts(i)
+
+figure; 
+% T=1 is the unperturbed fit to the empirical data !
+subplot(1,2,1)
+plot(Ts, -MoEs(1,:));
+title('entropy vs. temperature')
+xlabel('temperature')
+ylabel('entropy')
+subplot(1,2,2)
+plot(Ts, c);
+title('specific heat capacity vs. temperature')
+xlabel('temperature')
+ylabel('specific heat capacity')
+
