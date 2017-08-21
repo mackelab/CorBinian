@@ -3,7 +3,7 @@
 % dichotomized Gaussian process to a bivariate Bernoulli process using
 % bayesian inference. The present version is stable, but may change in the
 % future.
-addpath ../dich_gauss_bivar_bayes/
+addpath([base_dir, '/dich_gauss/dich_gauss_bivar_bayes/'])
 
 %% 1) initialize the prior distributions for the parameters
 

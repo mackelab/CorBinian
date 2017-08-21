@@ -60,10 +60,10 @@ BaseDir=pwd;
 
 
 %disp('First, have to set the two environment variables: Directory where the IsingCode is')
-BaseLoc=[base_dir '/maxent_MCMC/'];
+BaseLoc=[base_dir '/maxent/maxent_MCMC/MCMCbase/'];
 
 %disp('Directory where temporary results should be saved')
-TempLoc=[base_dir '/maxent_MCMC/temp_files/'];
+TempLoc=[base_dir '/maxent/maxent_MCMC/MCMCbase/temp_files/'];
 %keyboard
 
 
