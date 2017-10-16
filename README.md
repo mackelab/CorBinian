@@ -30,7 +30,7 @@ Our implementations use MCMC and iterative scaling to scale to large (N > 100) p
 This repository contains also code for fitting dichotomized Gaussian models to multivariate binary data. 
 Particularly fast code is available for 'homogeneous' models with shared mean- and interaction parameters across the population. 
 
-### specific heat analysis
+### Secific heat analysis
 
 This repository also provides functions for computing/estimating the variance of log probabilities and related specific heat capacity from multivariate binary distributions.  
 
