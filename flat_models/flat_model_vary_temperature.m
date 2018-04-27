@@ -1,5 +1,5 @@
 function [count_distribs,Zs,models,h]=flat_model_trace_temp(count_distrib,betas,fix_mean)
-%fiven a model with specificed spike-count distribution, calculate
+%given a model with specificed spike-count distribution, calculate
 %spike-count distributions for different inverse temperatures beta;
 %
 %formula: for states x, P_b(x)= 1/Z_b exp(beta*lambda'*F(x));
