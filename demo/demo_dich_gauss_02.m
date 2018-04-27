@@ -13,7 +13,7 @@ fprintf('\nDemo program for GENERATING SPIKE TRAINS WITH SPECIFIED SPATIO-TEMPOR
 T = 1e5;  % number of time bins
 N = 3;    % data dimensionality
 
-rng(42) % fix seed
+rng(42, 'twister') % fix seed
 
 %% Step 1: Create some spatio-temporally correlated binary toy data 
 % somewhat silly example to generate target spatio-temporal correlations
