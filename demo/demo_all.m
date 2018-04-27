@@ -8,6 +8,6 @@ demo_dich_gauss_counts
 demo_flat_models
 demo_maxent
 demo_maxent_MCMC
-demo_mess_with_temperature
+demo_vary_temperature
 demo_MPF
 demo_iterscaling

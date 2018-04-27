@@ -2,7 +2,7 @@
 %close all
 clear all
 
-N=334; %100 neurons
+N=100; %100 neurons
 Nsamples=1000; %1000 samples
 mu=0.024; %probability of spike per neuron
 rho=.1; %pairwise correlation between neurons
@@ -15,9 +15,9 @@ betas=10.^[-.1:.002:.1];
 [lambda,maxent_probs,maxent_model]=fit_flat_maxent_model(dg_model.count_distrib);
 [maxent_s]=sample_flat_model(maxent_probs,Nsamples);
 
-[count_distribs,Zs,temp_models]=flat_model_trace_temp(dg_model.count_distrib,betas);
+[count_distribs,Zs,temp_models]=flat_model_vary_temperature(dg_model.count_distrib,betas);
 
-[count_distribs_fixed,Zs_fixed,temp_models_fixed]=flat_model_trace_temp(dg_model.count_distrib,betas,1);
+[count_distribs_fixed,Zs_fixed,temp_models_fixed]=flat_model_vary_temperature(dg_model.count_distrib,betas,1);
 
 
 %%
