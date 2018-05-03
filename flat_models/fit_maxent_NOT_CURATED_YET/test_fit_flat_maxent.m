@@ -1,1 +1,0 @@
-%test fitting of flat maximum entropy model to data. 
