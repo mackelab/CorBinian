@@ -1,8 +1,9 @@
 function [gamma,lambda,count_distrib,model]=fit_flat_dg(mu,rho,N,maxN);
 %function [gamma,lambda,count_distrib,model]=fit_flat_dg(mu,rho,N,maxN);
 %
-%fit flat dg model to population data with given mean and correlation
-%
+% fit flat dg model to population data with given mean and correlation.
+% Flat dichotomized Gaussian models share a single mean and pair-wise   
+% covariance across all variables. 
 %
 %
 %

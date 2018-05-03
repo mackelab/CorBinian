@@ -1,13 +1,14 @@
 function [h,J,count_distrib,model]=fit_flat_ising_model(mu,rho,N,maxN, fitoptions);
 %function [h,J,count_distrib,model]=fit_flag_ising_model(mu,rho,N,maxN);
 %
-%fit flat ising model to population data with given mean and correlation
-%functional form is P(k)=1/Z (n choose k) exp(hk+Jk^2); 
+% fit flat ising model to population data with given mean and correlation.
+% functional form is P(k)=1/Z (n choose k) exp(hk+Jk^2); 
+%
 %
 %
 %
 [mucount,varcount]=meancorr_2_meanvar_count(mu,rho,N);
-%
+
 if nargin<=3
     maxN=N;
 end

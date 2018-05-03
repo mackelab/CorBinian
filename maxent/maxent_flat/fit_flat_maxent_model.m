@@ -1,12 +1,12 @@
 function [lambda,count_distrib,model]=fit_flat_maxent_model(count_distrib)
-%given a count distribution, fit the 'collective ' model as I call it, defined in
-%the Tkacik et al 'the simplest maximum entropy model for collective'
-%paper. We write this model as 
-%P(x)= 1/Z exp( lambda' F(x)) where the feature function F(x) is N
-%dimensional, and the k-th elemnt is 1 i x has k ones, and 0 otherwise. 
-%Following the sensible convention that also Tkacik uses, we shoose that P(K=0) has 'zero energy',
-%i.e. P(silence)= 1/Z; 
-
+%function [lambda,count_distrib,model]=fit_flat_maxent_model(count_distrib);
+%
+% fit flat maxent model to population data with given mean and correlation.
+% functional form is P(x)= 1/Z exp( lambda' F(x)) where the feature function 
+% F(x) is N-dimensional, and the k-th elemnt is 1 if x has k ones, and 0 otherwise. 
+%
+% see Tkacik et al 'the simplest maximum entropy model for collective'
+% we follow the convention that P(K=0) has 'zero energy',
 count_distrib=count_distrib(:);
 N=numel(count_distrib)-1;
 Pzero=count_distrib(1);

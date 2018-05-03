@@ -1,7 +1,8 @@
 function [s,hist_s]=sample_flat_model(pcount,nsamples)
-%sample from a 'flat' model given the distribution
-%of spike counts. 
-
+%function [s,hist_s]=sample_flat_model(pcount,nsamples)
+%
+% sample from a 'flat' model given the distribution of spike counts. 
+% 
 n=numel(pcount)-1;
 pcount=pcount/sum(pcount);
 cum_p=[0,cumsum(pcount)];

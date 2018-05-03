@@ -1,14 +1,12 @@
 function [gamma,lambda]=fit_semiflat_dg(mu,var_count,acc);
 %function [gamma,lambda]=fit_semiflat_dg(mu,var_count);
 %
-%given mean firing rates mu and the variance of the population spike count
-%varcount, fit a 'semiflat' DG model to the data, i.e. one in which the
-%correlation-state is 1D and all neurons have the same loading, i.e. Lambda
-%is a correlation matrix with a constant off-diagonal lambda.
+% fit a 'semiflat' dg model to population data with given mean and correlation.
+% 'Semiflat' dichomotized Gaussian models have a correlation-state that is 1D 
+% and all neurons have the same loading, i.e. Lambda is a correlation matrix 
+% with a constant off-diagonal lambda.
 %
-%function is super-naive and inefficient at the moment--very easy to make
-%it much faster by getting rid of some of the for-loops.
-
+%function is inefficient at the moment--could be made much faster 
 if nargin==2
     acc=1e-5;
 end
