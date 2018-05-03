@@ -2,7 +2,7 @@
 %through, not checking the results
 
 demo_dich_gauss_01
-demo_dich_gauss_02
+demo_dich_gauss_temporal_correlations
 demo_dich_gauss_bivar_bayes
 demo_dich_gauss_counts
 demo_flat_models

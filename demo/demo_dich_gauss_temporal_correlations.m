@@ -56,7 +56,7 @@ K = 10; % maximum temporal lag
 [mu, Sigma] = calc_hankel_from_data(S,K);
 
 % obtain \gamma, \Lambda with core DichGauss code 
-[St,g,L] = sampleDichGauss02(mu,Sigma,T,N,K);   
+[St,g,L] = sampleDichGauss_tempCorrs(mu,Sigma,T,N,K);   
 
 pause(1)
 
