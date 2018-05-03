@@ -1,4 +1,6 @@
 function [logP,logZ,P, means]=logPMaxEnt(x,lambda,logZ, weights, mode)
+%function [logP,logZ,P, means]=logPMaxEnt(x,lambda,logZ, weights, mode)
+%
 %calculate log probabilities, log partition function, probabilites and
 %feature means under a model of the form P(x)=exp(-logZ+lambda'*x).
 %If fourth argument 'weights' is added, it instead calculates P(x)=

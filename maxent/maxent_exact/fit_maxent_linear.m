@@ -1,4 +1,6 @@
 function [lambda,logZ, logP, fitmeans,output]=fit_maxent_linear(x, means, fitoptions,weights,penalties)
+%[lambda,logZ, logP, fitmeans,output]=fit_maxent_linear(x, means, fitoptions,weights,penalties)
+% 
 %Finds the parameters of a maximum entropy model of the form
 %P(x)=1/Z exp(\sum_i lambda_i x_i), such that the means of x under this model
 %match some supplied means.
