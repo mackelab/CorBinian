@@ -1,7 +1,21 @@
 function [lambda,logZ,logP,fitmeans,output]=fit_maxent_mpf(x, fitoptions)
+% [lambda,logZ,logP,fitmeans,output]=fit_maxent_mpf(x, fitoptions)
+%
+% Fits k-pairwise maximum entropy models with minimum probability flow. 
+% p(x) = exp( lambda' * f(x) ) / Z(lambda)
+%
+% Numerical optimization with Mark Schmidt's minFunc
+% https://www.cs.ubc.ca/~schmidtm/Software/minFunc.html
+% 
+% returns 
+% lambda : parameter vector of maximum entropy model
+% output : information from the numerical optimization 
+% optional (uncomment below):
+% logZ     : log normalizer maxEnt model with parameters lambda
+% logP     : log probability for all possible data patterns
+% fitmeans : expected values E[f(X)] under the maxEnt model with lambda
 
-[n, d] = size( x ); % watch out, n and d will switch meaning when packing
-                    % data x into data.x for the MPF code. Sorry for that.
+[n, d] = size(x); % n : number of data points, d : data dimensionality 
 
 %if starting point is provided, use it:
 if isfield(fitoptions,'lambda0')
@@ -13,17 +27,17 @@ else
 end
 
  % Parameter convention-conversion fun.
-  J = diag(lambda(1:d));                   % fiddle contents of h into J
-  J(logical(tril(ones(size(J)),-1))) = ... % fiddle contents of J into J
+  J = diag(lambda(1:d));                   % pack contents of h into J
+  J(logical(tril(ones(size(J)),-1))) = ... % pack contents of J into J
                               lambda(d+1:d*(d+1)/2); 
-  J = (J + J')/2;   % MPF actually requires some real matrix computations of
-                  % J with the data matrix x, thus it appears a bit tedious
+  J = (J + J')/2;   % MPF actually requires some matrix computations of
+                  % J with the data matrix x, thus it is tedious
                   % to work with upper-triangular J and pack/unpack each 
                   % call and to instead simply work with n^2 entries for J. 
     
   V = lambda(end-d:end); % assumes d+1 entries, i.e. a feature for K = 0
 
-  lambda = [J(:); V(:)]; % take note, this is what the following MPF code 
+  lambda = [J(:); V(:)]; % this is what the following MPF code 
                          % assumes the parameters to be structured as
    
  % Data preprocessing (data does not change over minFunc calls, do it once)
@@ -56,14 +70,14 @@ end
   output.fs=f;
   output.exitflag=exitflag;
   
- % More parameter convention-conversion fun.  
+ % More parameter convention-conversion.  
   J = reshape(lambda(1:d^2),d,d);
   h = diag(J);
   J = 2*J(logical(tril(ones(size(J)),-1)));
   V = lambda(end-d:end);                     
   lambda = [ h(:); J(:); V(:) ];
 
- % The following code is nice, but thends to bust memory for large (n,d)
+ % The following code thends to bust memory for large (n,d)
   %weights = 0; % currently cannot set them otherwise with this method.  
   % fx = setup_features_maxent(x, 'ising_count_l_0');
   %[logP,logZ,~,fitmeans]= logPMaxEnt(fx,lambda,[],weights);

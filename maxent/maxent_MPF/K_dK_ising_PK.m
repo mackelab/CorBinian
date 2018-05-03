@@ -2,8 +2,10 @@ function [K, dK] = K_dK_ising_PK( lambda, data )
 % Objective function for minimum probability flow model fitting for Ising
 % models with additional terms ('K-pairwise maximum entropy models')
 
-% Original author: Jascha Sohl-Dickstein (2012)
+% Original author (version for Ising models): Jascha Sohl-Dickstein (2012)
 % Web: http://redwood.berkeley.edu/wiki/Jascha_Sohl-Dickstein
+
+% Modified by Marcel Nonnenmacher to support extended Ising models
 
 % Inputs: 
 % lambda = [ J(:),L(:) ]: Concatentation of extended Ising+V(K) parameters
@@ -51,10 +53,10 @@ function [K, dK] = K_dK_ising_PK( lambda, data )
     % Compute derivatives dJ/dL of the activity count extension
     %------------------------------------------------------------
     indCount = logical(full(sparse(1:n,data.counts+1,1,n,d+1)));
-    indCountMinu1 = zeros(n, d+1);                % Using linear algebra
-    indCountMinu1(:,2:end) = indCount(:,1:end-1); % notation for simplicity
-    indCountPlus1 = zeros(n, d+1);                % (and Matlab's somewhat
-    indCountPlus1(:,1:end-1) = indCount(:,2:end); % fast). Could improve...
+    indCountMinu1 = zeros(n, d+1);                
+    indCountMinu1(:,2:end) = indCount(:,1:end-1); % Could 
+    indCountPlus1 = zeros(n, d+1);                % be made
+    indCountPlus1(:,1:end-1) = indCount(:,2:end); % faster
     
     dL =  (1/2) * ( sum(         Kfull,         1) * indCount ...
                   - sum(   data.x   .*   Kfull, 1) * indCountPlus1 ...
