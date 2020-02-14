@@ -13,6 +13,7 @@ end
 %special case of independent model-- use binopdf
 if lambda<1e-8;
     P=log(binopdf([0:n],n,normcdf(gamma)));
+    P=P(k+1);
 else
     for i=1:numel(k)
         
