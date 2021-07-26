@@ -29,6 +29,7 @@ Our implementations use MCMC and iterative scaling to scale to large (N > 100) p
 
 This repository contains also code for fitting dichotomized Gaussian models to multivariate binary data. 
 Particularly fast code is available for 'homogeneous' models with shared mean- and interaction parameters across the population. 
+A python implementation for the DG models is available here: https://github.com/mackelab/dg_python
 
 ### Secific heat analysis
 
